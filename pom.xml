@@ -12,6 +12,7 @@
 		<module>common</module>
 		<module>base</module>
 		<module>mall-web</module>
+		<module>release-app</module>
 	</modules>
 	<packaging>pom</packaging>
 
