@@ -6,7 +6,7 @@ create table app
 )
     comment 'app上传';
 
-create table ylt.app_history
+create table app_history
 (
     id          bigint auto_increment
         primary key,
