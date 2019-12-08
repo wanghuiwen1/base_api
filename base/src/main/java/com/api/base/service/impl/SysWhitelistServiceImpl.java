@@ -4,6 +4,8 @@ import com.api.base.dao.SysWhitelistMapper;
 import com.api.base.model.SysWhitelist;
 import com.api.base.service.SysWhitelistService;
 import com.api.core.AbstractService;
+import com.api.core.response.Result;
+import com.api.core.response.ResultGenerator;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,8 +24,14 @@ public class SysWhitelistServiceImpl extends AbstractService<SysWhitelist> imple
     private SysWhitelistMapper sysWhitelistMapper;
 
     @Override
-    @Cacheable(cacheNames = "whiteList",key = "'all'")
+    @Cacheable(cacheNames = "whiteList",key = "'whiteList'")
     public List<SysWhitelist> selectAll() {
         return sysWhitelistMapper.selectAll();
+    }
+
+    @Override
+    public Result update(String url,String id) {
+        sysWhitelistMapper.update(url,id);
+        return ResultGenerator.genSuccessResult();
     }
 }

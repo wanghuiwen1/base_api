@@ -1,6 +1,7 @@
 package com.api.base.service;
 import com.api.base.model.SysWhitelist;
 import com.api.core.Service;
+import com.api.core.response.Result;
 
 import java.util.List;
 
@@ -11,4 +12,6 @@ import java.util.List;
 public interface SysWhitelistService extends Service<SysWhitelist> {
 
     List<SysWhitelist> selectAll();
+
+    Result update(String s, String url);
 }

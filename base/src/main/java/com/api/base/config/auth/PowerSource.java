@@ -77,7 +77,7 @@ public class PowerSource implements FilterInvocationSecurityMetadataSource {
      * @return 定义允许请求的列表
      */
     private List<String> allowedRequest(){
-        List<SysWhitelist> whitelists=sysWhitelistService.findAll();
+        List<SysWhitelist> whitelists=sysWhitelistService.selectAll();
 
         return whitelists.stream()
                 .map(SysWhitelist::getUrl)

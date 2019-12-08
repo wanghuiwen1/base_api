@@ -33,7 +33,7 @@ public class SysWhitelistController extends Ctrl{
 
     @ApiOperation(value = "白名单添加", tags = {"白名单"}, notes = "白名单添加")
     @PostMapping(value="/add",name="白名单添加")
-    @CacheEvict(value = "whiteList",key = "'all'")
+    @CacheEvict(value = "whiteList",key = "'whiteList'")
     public Result add(@ApiParam SysWhitelist sysWhitelist) {
         sysWhitelistService.save(sysWhitelist);
         return ResultGenerator.genSuccessResult();
@@ -44,18 +44,19 @@ public class SysWhitelistController extends Ctrl{
         @ApiImplicitParam(name = "id",required=true, value = "白名单id", dataType = "Long", paramType = "query")
     })
     @PostMapping(value="/delete",name="白名单删除")
-    @CacheEvict(value = "whiteList",key = "'all'")
-    public Result delete(@RequestParam Long id) {
+    @CacheEvict(value = "whiteList",key = "'whiteList'")
+    public Result delete(@RequestParam String id) {
         sysWhitelistService.deleteById(id);
         return ResultGenerator.genSuccessResult();
     }
 
     @ApiOperation(value = "白名单修改", tags = {"白名单"}, notes = "白名单修改,对象主键必填")
     @PostMapping(value="/update",name="白名单修改")
-    @CacheEvict(value = "whiteList",key = "'all'")
-    public Result update(@ApiParam SysWhitelist sysWhitelist) {
-        sysWhitelistService.update(sysWhitelist);
-        return ResultGenerator.genSuccessResult();
+    @CacheEvict(value = "whiteList",key = "'whiteList'")
+    public Result update(@ApiParam String url,
+                         @ApiParam String id) {
+
+        return sysWhitelistService.update(url,id);
     }
 
     @ApiOperation(value = "白名单列表信息", tags = {"白名单"}, notes = "白名单列表信息")
@@ -64,7 +65,7 @@ public class SysWhitelistController extends Ctrl{
                        @RequestParam(defaultValue = "10") Integer size) {
         PageHelper.startPage(page, size);
 
-        List<SysWhitelist> list = sysWhitelistService.findAll();
+        List<SysWhitelist> list = sysWhitelistService.selectAll();
         PageInfo<SysWhitelist> pageInfo = new PageInfo<>(list);
         return ResultGenerator.genSuccessResult(pageInfo);
     }
