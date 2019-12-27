@@ -7,4 +7,8 @@
     -->
     <id column="url" jdbcType="VARCHAR" property="url" />
   </resultMap>
+
+  <update id="update" parameterType="java.util.Map">
+    update sys_whitelist set  url=#{url}  where url = #{id} ;
+  </update>
 </mapper>
