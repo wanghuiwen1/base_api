@@ -1,9 +1,10 @@
 package com.api.service.impl;
 
 import com.api.common.GeneratorSnowflakeId;
-import com.api.core.AbstractService;
+import com.api.common.config.UploadConfig;
 import com.api.core.response.Result;
 import com.api.core.response.ResultGenerator;
+import com.api.core.service.AbstractService;
 import com.api.dao.AppMapper;
 import com.api.model.App;
 import com.api.service.AppService;
@@ -26,13 +27,15 @@ public class AppServiceImpl extends AbstractService<App> implements AppService {
     Logger logger =  LoggerFactory.getLogger(this.getClass());
     @Resource
     private AppMapper appMapper;
-    @Value("${web.hostname}")
-    private String host;
+
+    @Resource
+    private UploadConfig uploadConfig;
+
 
     @Override
     public Result add(App app, HttpServletRequest request) {
         app.setId(GeneratorSnowflakeId.nextId());
-        app.setIndexUrl(host+"app/index/"+app.getId());
+        app.setIndexUrl(uploadConfig.getHost()+"app/index/"+app.getId());
         appMapper.insertSelective(app);
         return ResultGenerator.genSuccessResult();
     }

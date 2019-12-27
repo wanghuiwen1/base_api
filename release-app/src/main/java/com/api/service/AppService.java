@@ -1,7 +1,7 @@
 package com.api.service;
 
-import com.api.core.Service;
 import com.api.core.response.Result;
+import com.api.core.service.Service;
 import com.api.model.App;
 
 import javax.servlet.http.HttpServletRequest;

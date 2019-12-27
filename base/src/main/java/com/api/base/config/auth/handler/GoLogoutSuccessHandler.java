@@ -15,7 +15,7 @@ import java.io.IOException;
 public class GoLogoutSuccessHandler implements LogoutSuccessHandler {
     @Override
     public void onLogoutSuccess(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Authentication authentication) throws IOException {
-        Result result = ResultGenerator.genResult(ResultEnum.CREATED);
+        Result result = ResultGenerator.genResult(ResultEnum.LOGIN_OUT_SUCCESS);
 
         httpServletResponse.setHeader("Content-Type", "application/json;charset=utf-8");
         httpServletResponse.setStatus(HttpStatus.OK.value());

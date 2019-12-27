@@ -68,8 +68,7 @@ public class PowerSource implements FilterInvocationSecurityMetadataSource {
     }
 
     /**
-     * 参考：
-     * https://blog.csdn.net/pujiaolin/article/details/73928491
+     *
      * @return 定义允许请求的列表
      */
     private List<String> allowedRequest(){

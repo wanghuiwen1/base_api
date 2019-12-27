@@ -1,12 +1,12 @@
 package com.api.base.config;
 
+import com.api.common.config.UploadConfig;
 import com.api.core.annotation.condition.HttpsCondition;
 import org.apache.catalina.Context;
 import org.apache.tomcat.util.descriptor.web.SecurityCollection;
 import org.apache.tomcat.util.descriptor.web.SecurityConstraint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
@@ -19,6 +19,7 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -28,16 +29,16 @@ import java.util.List;
 public class MvcConfigurer implements WebMvcConfigurer {
 
     private final Logger logger = LoggerFactory.getLogger(MvcConfigurer.class);
-    @Value("${spring.profiles.active}")
-    private String env;//当前激活的配置文件
-    @Value("${web.upload-path}")
-    private String path;
+
+    @Resource
+    private UploadConfig uploadConfig;
+
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
 
-        registry.addResourceHandler("/image/**")
-                .addResourceLocations("file:" + path);
+        registry.addResourceHandler("/"+uploadConfig.getPrefix()+"**")
+                .addResourceLocations("file:" + uploadConfig.getFilePath());
 
         registry.addResourceHandler("swagger-ui.html")
                 .addResourceLocations("classpath:/META-INF/resources/");
@@ -48,8 +49,7 @@ public class MvcConfigurer implements WebMvcConfigurer {
         registry.addResourceHandler("/**")
                 .addResourceLocations("classpath:/META-INF/resources/")
                 .addResourceLocations("classpath:/resources/")
-                .addResourceLocations("classpath:/static/")
-                .addResourceLocations("classpath:/public/");
+                .addResourceLocations("classpath:/static/");
 
         WebMvcConfigurer.super.addResourceHandlers(registry);
     }
@@ -69,6 +69,7 @@ public class MvcConfigurer implements WebMvcConfigurer {
         builder.indentOutput(true);
         converters.add(new MappingJackson2XmlHttpMessageConverter(builder.build()));
     }
+
     @Conditional(HttpsCondition.class)
     @Bean
     public ServletWebServerFactory servletContainer() {

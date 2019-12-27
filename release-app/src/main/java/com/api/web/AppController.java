@@ -1,7 +1,7 @@
 package com.api.web;
 
-import com.api.core.Ctrl;
 import com.api.core.annotation.PowerEnable;
+import com.api.core.controller.Ctrl;
 import com.api.core.response.Result;
 import com.api.core.response.ResultGenerator;
 import com.api.model.App;

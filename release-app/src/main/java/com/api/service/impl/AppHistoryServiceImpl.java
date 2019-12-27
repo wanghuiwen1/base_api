@@ -1,6 +1,6 @@
 package com.api.service.impl;
 
-import com.api.core.AbstractService;
+import com.api.core.service.AbstractService;
 import com.api.dao.AppHistoryMapper;
 import com.api.model.AppHistory;
 import com.api.service.AppHistoryService;

@@ -1,5 +1,6 @@
 package com.api.base.controll;
 
+import com.api.common.config.UploadConfig;
 import com.api.common.ImageUploadUtil;
 import com.api.core.annotation.PowerEnable;
 import com.api.core.response.Result;
@@ -11,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
@@ -35,14 +36,8 @@ import java.util.Map;
 public class Upload {
     Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    @Value("${image.host}")
-    private String host;
-    @Value("${image.port}")
-    private String port;
-    @Value("${web.upload-path}")
-    private String path;
-    @Value("${server.servlet.context-path}")
-    private String context;
+    @Resource
+    private UploadConfig uploadConfig;
 
     /**
      * 单图图上传　
@@ -58,15 +53,15 @@ public class Upload {
         Map<String, String> res = new HashMap<>();
 
         try {
-            String paths = ImageUploadUtil.upload(request, path + up);
+            String paths = ImageUploadUtil.upload(request, uploadConfig.getFilePath() + up);
             for (int i = 0; i < paths.split(",").length; i++) {
-                res.put("default", "http://" + host + ":" + port + context + "/image/" + up + paths.split(",")[i]);
+                res.put("default", uploadConfig.getHost() + uploadConfig.getPrefix() + up + paths.split(",")[i]);
             }
             return res;
         } catch (IOException e) {
            logger.error("图片上传出错",e);
         }
-        return null;
+        return res;
     }
 
 
@@ -80,11 +75,11 @@ public class Upload {
     public Result uploadIdCard(HttpServletRequest request) {
         String up = "img/";
         try {
-            String spath = ImageUploadUtil.upload(request, path + up);
-            return ResultGenerator.genResultAndData(ResultEnum.UPLOADED,"image/" + up + spath.split(",")[0]);
+            String spath = ImageUploadUtil.upload(request, uploadConfig.getFilePath() + up);
+            return ResultGenerator.genResultAndData(ResultEnum.UPLOADED,uploadConfig.getPrefix() + up + spath.split(",")[0]);
         } catch (IOException e) {
             logger.error("图片上传出错",e);
-            return ResultGenerator.genFailResult("图片上传出错");
+            return ResultGenerator.genResult(ResultEnum.UPLOADED_FAIL);
         }
     }
     /**
@@ -123,7 +118,7 @@ public class Upload {
                             throw new RuntimeException("不支持文件格式" + suffix);
                         }
 
-                        File upload = new File(path + "apk" + File.separator);
+                        File upload = new File(uploadConfig.getFilePath() + "apk" + File.separator);
 
                         if (!upload.exists()) {
                             upload.mkdirs();
@@ -133,7 +128,7 @@ public class Upload {
                             fileName = (originalFilename + suffix);
 
                             file.transferTo(uploadFile);
-                            return ResultGenerator.genSuccessResult("http://" + host + ":" + port + "/" + context + "/image/apk/" + fileName);
+                            return ResultGenerator.genSuccessResult(uploadConfig.getHost() + uploadConfig.getPrefix()+ "apk/" + fileName);
                         } catch (IOException e) {
                             logger.error("图片上传出错",e);
                             return ResultGenerator.genResult(ResultEnum.UPLOADED_FAIL);

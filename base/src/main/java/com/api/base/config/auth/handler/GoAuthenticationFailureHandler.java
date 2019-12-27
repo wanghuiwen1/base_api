@@ -2,6 +2,7 @@ package com.api.base.config.auth.handler;
 
 import com.alibaba.fastjson.JSON;
 import com.api.core.response.Result;
+import com.api.core.response.ResultEnum;
 import com.api.core.response.ResultGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +22,7 @@ public class GoAuthenticationFailureHandler implements AuthenticationFailureHand
 
         logger.warn("身份验证出错",e);
 
-        Result result = ResultGenerator.genUnauthorizedResult();
+        Result result = ResultGenerator.genResult(ResultEnum.LOGIN_FAIL);
         httpServletResponse.setHeader("Content-Type", "application/json;charset=utf-8");
         httpServletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
         httpServletResponse.getWriter().write(JSON.toJSONString(result));

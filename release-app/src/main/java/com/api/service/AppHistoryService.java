@@ -1,5 +1,5 @@
 package com.api.service;
-import com.api.core.Service;
+import com.api.core.service.Service;
 import com.api.model.AppHistory;
 
 import java.util.List;
