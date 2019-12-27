@@ -2,8 +2,7 @@ package com.api.base.service;
 
 import com.api.base.model.Role;
 import com.api.base.model.User;
-import com.api.base.model.UserRole;
-import com.api.core.Service;
+import com.api.core.service.Service;
 import com.api.core.response.Result;
 
 import java.util.List;

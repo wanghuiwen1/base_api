@@ -1,5 +1,5 @@
 package com.api.base.controll;
-import com.api.core.Ctrl;
+import com.api.core.controller.Ctrl;
 import com.api.core.response.Result;
 import com.api.core.response.ResultGenerator;
 import com.api.base.model.SysWhitelist;
@@ -11,8 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import tk.mybatis.mapper.entity.Condition;
-import tk.mybatis.mapper.entity.Example;
+
 import javax.annotation.Resource;
 import java.util.List;
 import com.api.core.annotation.PowerEnable;

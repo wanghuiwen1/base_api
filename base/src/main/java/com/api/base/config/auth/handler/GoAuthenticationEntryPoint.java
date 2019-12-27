@@ -2,13 +2,13 @@ package com.api.base.config.auth.handler;
 
 import com.alibaba.fastjson.JSON;
 import com.api.core.response.Result;
-import com.api.core.response.ResultCode;
+import com.api.core.response.ResultGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -23,10 +23,10 @@ public class GoAuthenticationEntryPoint  implements AuthenticationEntryPoint {
 
     @Override
     public void commence(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, AuthenticationException e) throws IOException {
-        Result result = new Result().setMessage("未登录,请先登录").setCode(ResultCode.FAIL);
+        Result result = ResultGenerator.genForbiddenResult();
         logger.warn("身份验证出错",e);
         httpServletResponse.setHeader("Content-Type", "application/json;charset=utf-8");
-        httpServletResponse.setStatus(403);
+        httpServletResponse.setStatus(HttpStatus.FORBIDDEN.value());
         httpServletResponse.getWriter().write(JSON.toJSONString(result));
         httpServletResponse.getWriter().flush();
     }

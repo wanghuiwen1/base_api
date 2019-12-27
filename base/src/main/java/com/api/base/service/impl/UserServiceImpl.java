@@ -7,10 +7,10 @@ import com.api.base.model.Role;
 import com.api.base.model.User;
 import com.api.base.model.UserRole;
 import com.api.base.service.UserService;
-import com.api.core.AbstractService;
 import com.api.core.response.Result;
+import com.api.core.service.AbstractService;
 import com.api.core.response.ResultGenerator;
-import com.api.core.response.ResultMessage;
+import com.api.core.response.ResultEnum;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,7 +42,7 @@ public class UserServiceImpl extends AbstractService<User> implements UserServic
     @Override
     public Result addRole(List<Long> roles, Long userId) {
         User user = findById(userId);
-        if (user == null) return ResultGenerator.genFailResult(ResultMessage.NO_CONTENT);
+        if (user == null) return ResultGenerator.genFailResult(ResultEnum.NO_CONTENT);
 
         List<UserRole> userRoles = new ArrayList<>();
         for (Long id : roles) {

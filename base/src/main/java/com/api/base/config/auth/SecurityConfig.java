@@ -29,7 +29,6 @@ import org.springframework.web.filter.CorsFilter;
 
 import javax.annotation.Resource;
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 @Configuration

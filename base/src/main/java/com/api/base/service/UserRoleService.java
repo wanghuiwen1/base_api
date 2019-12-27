@@ -1,6 +1,6 @@
 package com.api.base.service;
 import com.api.base.model.UserRole;
-import com.api.core.Service;
+import com.api.core.service.Service;
 
 
 /**

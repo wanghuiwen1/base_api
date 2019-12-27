@@ -10,21 +10,16 @@ public class Result {
     private String message;
     private Object data;
 
-    static class ResultPage extends Result{
-        private Long count;
-        public Object getCount() {
-            return count;
-        }
-
-        Result setCount(Long count) {
-            this.count = count;
-            return this;
-        }
-
+    public Result(IResultEnum resultEnum, Object data) {
+        this.data = data;
+        this.code = resultEnum.getCode();
+        this.message = resultEnum.getMessage();
     }
-    public Result setCode(ResultCode resultCode) {
-        this.code = resultCode.code();
-        return this;
+
+    public Result(IResultEnum resultEnum) {
+        this.code = resultEnum.getCode();
+        this.message = resultEnum.getMessage();
+        this.data = null;
     }
 
     public int getCode() {
@@ -35,23 +30,8 @@ public class Result {
         return message;
     }
 
-    public Result setMessage(ResultMessage resultMessage) {
-        this.message = resultMessage.message();
-        return this;
-    }
-
-    public Result setMessage(String message) {
-        this.message = message;
-        return this;
-    }
-
     public Object getData() {
         return data;
-    }
-
-    public Result setData(Object data) {
-        this.data = data;
-        return this;
     }
 
     @Override

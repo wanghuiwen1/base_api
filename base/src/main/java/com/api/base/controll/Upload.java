@@ -3,6 +3,7 @@ package com.api.base.controll;
 import com.api.common.ImageUploadUtil;
 import com.api.core.annotation.PowerEnable;
 import com.api.core.response.Result;
+import com.api.core.response.ResultEnum;
 import com.api.core.response.ResultGenerator;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -80,7 +81,7 @@ public class Upload {
         String up = "img/";
         try {
             String spath = ImageUploadUtil.upload(request, path + up);
-            return ResultGenerator.genSuccessResult("http://" + host + ":" + port + "/" + context + "/image/" + up + spath.split(",")[0]).setMessage("上传成功");
+            return ResultGenerator.genResultAndData(ResultEnum.UPLOADED,"http://" + host + ":" + port + "/" + context + "/image/" + up + spath.split(",")[0]);
         } catch (IOException e) {
             logger.error("图片上传出错",e);
             return ResultGenerator.genFailResult("图片上传出错");
@@ -135,18 +136,12 @@ public class Upload {
                             return ResultGenerator.genSuccessResult("http://" + host + ":" + port + "/" + context + "/image/apk/" + fileName);
                         } catch (IOException e) {
                             logger.error("图片上传出错",e);
+                            return ResultGenerator.genResult(ResultEnum.UPLOADED_FAIL);
                         }
                     }
                 }
             }
         }
-        return null;
+        return ResultGenerator.genResult(ResultEnum.UPLOADED_FAIL);
     }
-
-    @GetMapping(value = "/gettoken")
-    @ResponseBody
-    private String getToken(String token) {
-        return "Bearer "+token;
-    }
-
 }

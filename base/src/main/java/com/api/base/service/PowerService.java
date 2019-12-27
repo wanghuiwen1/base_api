@@ -2,7 +2,7 @@ package com.api.base.service;
 
 import com.api.base.model.Power;
 import com.api.common.mybatis.ResultMap;
-import com.api.core.Service;
+import com.api.core.service.Service;
 
 import java.util.List;
 

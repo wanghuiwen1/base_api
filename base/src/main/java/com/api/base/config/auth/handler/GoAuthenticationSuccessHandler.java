@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.api.base.config.auth.AuthUser;
 import com.api.base.config.auth.JwtTokenUtil;
 import com.api.core.response.Result;
+import com.api.core.response.ResultEnum;
 import com.api.core.response.ResultGenerator;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -39,7 +40,7 @@ public class GoAuthenticationSuccessHandler implements AuthenticationSuccessHand
         res.put("info",userDetails);
         res.put("token", jwtToken);
 
-        Result result = ResultGenerator.genSuccessResult(res, "登录成功");
+        Result result = ResultGenerator.genResultAndData(ResultEnum.LOGIN_SUCCESS,res);
 
         httpServletResponse.setStatus(HttpStatus.OK.value());
         httpServletResponse.getWriter().write(JSON.toJSONString(result));

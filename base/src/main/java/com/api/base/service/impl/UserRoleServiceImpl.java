@@ -3,7 +3,7 @@ package com.api.base.service.impl;
 import com.api.base.dao.UserRoleMapper;
 import com.api.base.model.UserRole;
 import com.api.base.service.UserRoleService;
-import com.api.core.AbstractService;
+import com.api.core.service.AbstractService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

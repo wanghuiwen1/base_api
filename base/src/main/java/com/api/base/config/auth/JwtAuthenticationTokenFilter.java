@@ -1,8 +1,14 @@
 package com.api.base.config.auth;
 
+import com.alibaba.fastjson.JSON;
 import com.api.base.config.auth.service.DetailsServic;
+import com.api.core.response.Result;
+import com.api.core.response.ResultEnum;
+import com.api.core.response.ResultGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.RedisConnectionFailureException;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -35,6 +41,8 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        try {
+
         String authHeader = request.getHeader(tokenHeader);
         if (authHeader != null && authHeader.startsWith(tokenHead)) {
             String authToken = authHeader.substring(tokenHead.length());
@@ -51,6 +59,17 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
         }
         filterChain.doFilter(request, response);
+        }catch (Exception e){
+            logger.error("TokenFilterException",e);
+            response.setHeader("Content-Type", "application/json;charset=utf-8");
+            response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            Result result = ResultGenerator.genExceptionResult();
+            if(e instanceof RedisConnectionFailureException){
+                result = ResultGenerator.genResult(ResultEnum.REDIS_CONNECTION_FAILUR);
+            }
+            response.getWriter().write(JSON.toJSONString(result));
+            response.getWriter().flush();
+        }
     }
 
 

@@ -4,7 +4,7 @@ import com.api.base.dao.PowerMapper;
 import com.api.base.model.Power;
 import com.api.base.service.PowerService;
 import com.api.common.mybatis.ResultMap;
-import com.api.core.AbstractService;
+import com.api.core.service.AbstractService;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

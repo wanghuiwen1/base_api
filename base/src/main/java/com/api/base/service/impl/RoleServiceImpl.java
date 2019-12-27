@@ -6,7 +6,7 @@ import com.api.base.dao.RolePowerMapper;
 import com.api.base.model.Role;
 import com.api.base.model.RolePower;
 import com.api.base.service.RoleService;
-import com.api.core.AbstractService;
+import com.api.core.service.AbstractService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

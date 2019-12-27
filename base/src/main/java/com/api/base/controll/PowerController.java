@@ -4,7 +4,7 @@ package com.api.base.controll;
 import com.api.base.dto.ElTree;
 import com.api.base.model.Power;
 import com.api.base.service.PowerService;
-import com.api.core.Ctrl;
+import com.api.core.controller.Ctrl;
 import com.api.core.annotation.PowerEnable;
 import com.api.core.response.Result;
 import com.api.core.response.ResultGenerator;

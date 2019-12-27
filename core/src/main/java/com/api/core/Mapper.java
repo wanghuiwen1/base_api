@@ -1,6 +1,6 @@
 package com.api.core;
 
-import com.api.core.IbaseDao.InsertList;
+import com.api.core.dao.InsertList;
 import tk.mybatis.mapper.common.BaseMapper;
 import tk.mybatis.mapper.common.ConditionMapper;
 import tk.mybatis.mapper.common.IdsMapper;
