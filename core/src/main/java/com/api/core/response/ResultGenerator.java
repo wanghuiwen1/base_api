@@ -56,4 +56,8 @@ public class ResultGenerator {
     public static Result genResult(ResultEnum resultEnum) {
         return new Result(resultEnum);
     }
+
+    public static Result genExceptionResult(Exception e) {
+        return new Result(e);
+    }
 }

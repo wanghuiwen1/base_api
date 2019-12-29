@@ -27,12 +27,12 @@ public class ExceptionHandler {
         if (e instanceof MaxUploadSizeExceededException) return ResultGenerator.genResult(ResultEnum.UPLOADED_MAX);
         if (e instanceof IllegalArgumentException) return ResultGenerator.genResult(ResultEnum.DATE_ENTRY_ERROR);
         if (e instanceof MissingServletRequestParameterException)
-            return ResultGenerator.genResult(ResultEnum.DATE_ENTRY_ERROR);
+            return ResultGenerator.genResult(ResultEnum.PARAMS_LACK);
         if (e instanceof ConnectException) return ResultGenerator.genResult(ResultEnum.CONNECT_EXCEPTION);
         if (e instanceof HttpRequestMethodNotSupportedException)
             return ResultGenerator.genResult(ResultEnum.INTERNAL_SERVER_ERROR);
-        if (e instanceof ServiceException) return ResultGenerator.genResult(ResultEnum.INTERNAL_SERVER_ERROR);
         if (e instanceof RequestRejectedException) return ResultGenerator.genResult(ResultEnum.INTERNAL_SERVER_ERROR);
+        if (e instanceof ServiceException) return ResultGenerator.genExceptionResult(e);
         return ResultGenerator.genExceptionResult();
     }
 }

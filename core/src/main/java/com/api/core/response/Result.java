@@ -10,6 +10,11 @@ public class Result {
     private String message;
     private Object data;
 
+    public Result(Exception e) {
+        this.code=400;
+        this.message = e.getMessage();
+    }
+
     public Result(IResultEnum resultEnum, Object data) {
         this.data = data;
         this.code = resultEnum.getCode();

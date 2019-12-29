@@ -27,6 +27,8 @@ public enum ResultEnum implements IResultEnum {
     UPLOADED_MAX("文件过大,无法上传",400113),
     CONNECT_EXCEPTION("网络链接异常",400114),
     REDIS_CONNECTION_FAILUR("redis连接失败",400115),
+    PARAMS_LACK("缺少参数",400116),
+    MODULE_EXISTS("模块不存在",400117),
     ;
 
     private final String message;

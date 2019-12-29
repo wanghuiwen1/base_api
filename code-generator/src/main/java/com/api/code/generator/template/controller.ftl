@@ -1,7 +1,7 @@
-package ${basePackage}.web;
-import ${baseCore}.Ctrl;
-import ${baseCore}.response.Result;
-import ${baseCore}.response.ResultGenerator;
+package ${basePackage}.controller;
+import ${baseController};
+import ${baseResult};
+import ${baseResultGenerator};
 import ${basePackage}.model.${modelNameUpperCamel};
 import ${basePackage}.service.${modelNameUpperCamel}Service;
 import com.github.pagehelper.PageHelper;
