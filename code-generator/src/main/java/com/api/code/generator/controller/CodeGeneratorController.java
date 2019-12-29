@@ -4,64 +4,92 @@ package com.api.code.generator.controller;
 import com.api.code.generator.service.GeneratorService;
 import com.api.core.annotation.PowerEnable;
 import com.api.core.response.Result;
-import com.api.core.response.ResultEnum;
 import com.api.core.response.ResultGenerator;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.io.File;
 
 
 /**
  * 代码生成器，根据数据表名称生成对应的Model、Mapper、Service、Controller简化开发。
  */
-@PowerEnable(name = "生成代码", url = "/power")
+@PowerEnable(name = "生成代码", url = "/generator")
 @Api(value = "生成代码", tags = {"生成代码"})
-@RestController
+@Controller
 @RequestMapping("/generator")
 public class CodeGeneratorController {
+    Logger logger = LoggerFactory.getLogger(this.getClass());
     @Resource
     private GeneratorService generatorService;
 
 
-    @ApiOperation(value = "生成Model代码", tags = {"生成代码"}, notes = "生成Model代码")
-    @GetMapping(value = "/model", name = "生成Model代码")
     public Result generatorCodeModel(@RequestParam String moduleName,
                                      @RequestParam String tableName,
                                      @RequestParam String businessName) {
-        return generatorService.genCode(true,false, false,false, businessName, tableName, moduleName);
+        return generatorService.genCode(true, false, false, false, businessName, tableName, moduleName);
     }
 
-    @ApiOperation(value = "生成Model和Mapper代码", tags = {"生成代码"}, notes = "生成Model和Mapper代码")
-    @GetMapping(value = "/model/mapper", name = "生成Model和Mapper代码")
+
     public Result generatorCodeModelAndMapper(@RequestParam String moduleName,
                                               @RequestParam String tableName,
                                               @RequestParam String businessName) {
-        generatorService.genCode(true, true,false,false, businessName, tableName, moduleName);
+        generatorService.genCode(true, true, false, false, businessName, tableName, moduleName);
         return ResultGenerator.genSuccessResult();
     }
 
-    @ApiOperation(value = "生成service代码", tags = {"生成代码"}, notes = "生成service代码")
-    @GetMapping(value = "/service", name = "生成service代码")
-    public Result generatorCodeService(@RequestParam String moduleName,
-                                              @RequestParam String tableName,
-                                              @RequestParam String businessName) {
-        return  generatorService.genCode(false, false,true,false, businessName, tableName, moduleName);
-    }
 
-    @ApiOperation(value = "生成controller代码", tags = {"生成代码"}, notes = "生成controller代码")
-    @GetMapping(value = "/controller", name = "生成controller代码")
-    public Result generatorCodeController(@RequestParam String moduleName,
+    public Result generatorCodeService(@RequestParam String moduleName,
                                        @RequestParam String tableName,
                                        @RequestParam String businessName) {
-
-
-        return generatorService.genCode(false, false,false,true, businessName, tableName, moduleName);
+        return generatorService.genCode(false, false, true, false, businessName, tableName, moduleName);
     }
 
+
+    public Result generatorCodeController(@RequestParam String moduleName,
+                                          @RequestParam String tableName,
+                                          @RequestParam String businessName) {
+
+
+        return generatorService.genCode(false, false, false, true, businessName, tableName, moduleName);
+    }
+
+    @GetMapping(value = "/code")
+    public String code(Model model) {
+        return "/generator.html";
+    }
+
+    @PostMapping(value = "/code/submit")
+    @ResponseBody
+    public Result code(@RequestParam String moduleName,
+                       @RequestParam String tableName,
+                       @RequestParam String businessName,
+                       @RequestParam(required = false) String modelOnly,
+                       @RequestParam(required = false) String modelAndMapper,
+                       @RequestParam(required = false) String service,
+                       @RequestParam(required = false) String controller) {
+        Result result = new Result();
+        if (modelOnly != null && modelAndMapper == null){
+            result =  generatorCodeModel(moduleName, tableName, businessName);
+            if (result.getCode()!= 200) return result;
+        }
+        if (modelAndMapper != null) {
+            result = generatorCodeModelAndMapper(moduleName, tableName, businessName);
+            if (result.getCode()!= 200) return result;
+        }
+        if (service != null) {
+            result = generatorCodeService(moduleName, tableName, businessName);
+            if (result.getCode()!= 200) return result;
+        }
+        if (controller != null){
+            result = generatorCodeController(moduleName, tableName, businessName);
+            if (result.getCode()!= 200) return result;
+        }
+        return ResultGenerator.genSuccessResult();
+    }
 }

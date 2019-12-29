@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div>
+    <form id="code" method="post">
+        <div>
+            项目模块<input type="text" value="" name="moduleName"/>
+        </div>
+        <div>
+            业务名称<input type="text" value="" name="businessName"/>
+        </div>
+        <div>
+            表名<input type="text" value="" name="tableName"/>
+        </div>
+        <div>
+            生成Model<input type="checkbox" name="modelOnly"/>
+        </div>
+        <div>
+            生成Model和Mapper<input type="checkbox" name="modelAndMapper"/>
+        </div>
+        <div>
+            生成Service<input type="checkbox" name="service"/>
+        </div>
+        <div>
+            生成Controller<input type="checkbox" name="controller"/>
+        </div>
+        <div>
+            <input type="button" value="生成" onclick="generator()"/>
+        </div>
+    </form>
+</div>
+<script type="text/javascript">
+    function generator() {
+        fetch('/generator/code/submit', {
+            method: 'post',
+            body: new FormData(document.getElementById('code'))
+        }).then(res => res.json())
+            .catch(error => console.error('Error:', error))
+            .then(response => {
+                alert(response.message)
+            });
+    }
+</script>
+</body>
+</html>

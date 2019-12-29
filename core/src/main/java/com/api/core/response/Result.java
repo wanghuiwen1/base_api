@@ -10,6 +10,9 @@ public class Result {
     private String message;
     private Object data;
 
+    public Result() {
+    }
+
     public Result(Exception e) {
         this.code=400;
         this.message = e.getMessage();

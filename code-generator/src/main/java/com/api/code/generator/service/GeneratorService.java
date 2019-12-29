@@ -149,7 +149,7 @@ public class GeneratorService {
 
         if (generator.getGeneratedJavaFiles().isEmpty() || generator.getGeneratedXmlFiles().isEmpty()) {
             logger.error("生成Model和Mapper失败");
-            throw new RuntimeException("生成Model和Mapper失败：" + warnings);
+            throw new ServiceException("生成失败：" + warnings);
         }
         logger.info("生成Model和Mapper成功");
     }
