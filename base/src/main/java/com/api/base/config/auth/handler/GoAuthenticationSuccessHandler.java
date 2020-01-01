@@ -1,8 +1,8 @@
 package com.api.base.config.auth.handler;
 
-import com.alibaba.fastjson.JSON;
 import com.api.base.config.auth.AuthUser;
 import com.api.base.config.auth.JwtTokenUtil;
+import com.api.common.JSONUtils;
 import com.api.core.response.Result;
 import com.api.core.response.ResultEnum;
 import com.api.core.response.ResultGenerator;
@@ -43,7 +43,7 @@ public class GoAuthenticationSuccessHandler implements AuthenticationSuccessHand
         Result result = ResultGenerator.genResultAndData(ResultEnum.LOGIN_SUCCESS,res);
 
         httpServletResponse.setStatus(HttpStatus.OK.value());
-        httpServletResponse.getWriter().write(JSON.toJSONString(result));
+        httpServletResponse.getWriter().write(JSONUtils.obj2json(result));
         httpServletResponse.getWriter().flush();
 
     }

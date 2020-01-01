@@ -1,6 +1,6 @@
 package com.api.base.config.auth.handler;
 
-import com.alibaba.fastjson.JSON;
+import com.api.common.JSONUtils;
 import com.api.core.response.Result;
 import com.api.core.response.ResultEnum;
 import com.api.core.response.ResultGenerator;
@@ -25,7 +25,7 @@ public class GoAuthenticationFailureHandler implements AuthenticationFailureHand
         Result result = ResultGenerator.genResult(ResultEnum.LOGIN_FAIL);
         httpServletResponse.setHeader("Content-Type", "application/json;charset=utf-8");
         httpServletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
-        httpServletResponse.getWriter().write(JSON.toJSONString(result));
+        httpServletResponse.getWriter().write(JSONUtils.obj2json(result));
         httpServletResponse.getWriter().flush();
     }
 

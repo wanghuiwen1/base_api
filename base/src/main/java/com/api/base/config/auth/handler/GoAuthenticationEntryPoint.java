@@ -1,6 +1,6 @@
 package com.api.base.config.auth.handler;
 
-import com.alibaba.fastjson.JSON;
+import com.api.common.JSONUtils;
 import com.api.core.response.Result;
 import com.api.core.response.ResultGenerator;
 import org.slf4j.Logger;
@@ -27,7 +27,7 @@ public class GoAuthenticationEntryPoint  implements AuthenticationEntryPoint {
         logger.warn("身份验证出错",e);
         httpServletResponse.setHeader("Content-Type", "application/json;charset=utf-8");
         httpServletResponse.setStatus(HttpStatus.FORBIDDEN.value());
-        httpServletResponse.getWriter().write(JSON.toJSONString(result));
+        httpServletResponse.getWriter().write(JSONUtils.obj2json(result));
         httpServletResponse.getWriter().flush();
     }
 

@@ -1,10 +1,8 @@
 package com.api.common.wx;
 
-import com.alibaba.fastjson.JSON;
+import com.api.common.JSONUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.ParseException;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
@@ -41,7 +39,8 @@ public class WxCommon {
 
                 if (entity != null) {
                     // 打印响应内容
-                    res =  JSON.parseObject(EntityUtils.toString(entity));
+
+                    res =  JSONUtils.json2map(EntityUtils.toString(entity));
                 }
             } finally {
                 response.close();

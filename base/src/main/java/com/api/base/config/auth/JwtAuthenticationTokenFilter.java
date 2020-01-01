@@ -1,7 +1,7 @@
 package com.api.base.config.auth;
 
-import com.alibaba.fastjson.JSON;
 import com.api.base.config.auth.service.DetailsServic;
+import com.api.common.JSONUtils;
 import com.api.core.response.Result;
 import com.api.core.response.ResultEnum;
 import com.api.core.response.ResultGenerator;
@@ -67,7 +67,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
             if(e instanceof RedisConnectionFailureException){
                 result = ResultGenerator.genResult(ResultEnum.REDIS_CONNECTION_FAILUR);
             }
-            response.getWriter().write(JSON.toJSONString(result));
+            response.getWriter().write(JSONUtils.obj2json(result));
             response.getWriter().flush();
         }
     }

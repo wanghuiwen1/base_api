@@ -1,11 +1,11 @@
 package com.api.base.service.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.api.base.dao.RoleMapper;
 import com.api.base.dao.RolePowerMapper;
 import com.api.base.model.Role;
 import com.api.base.model.RolePower;
 import com.api.base.service.RoleService;
+import com.api.common.JSONUtils;
 import com.api.core.service.AbstractService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,7 +30,7 @@ public class RoleServiceImpl extends AbstractService<Role> implements RoleServic
     @Transactional
     public void addPower(String powers,Long roleId) {
         roleMapper.deletePower(roleId);
-        List<Long> powerids = JSON.parseArray(powers,Long.class);
+        List<Long> powerids = JSONUtils.json2list(powers,Long.class);
 
         List<RolePower> rolePowers = new ArrayList<>();
         for (Long pid: powerids) {

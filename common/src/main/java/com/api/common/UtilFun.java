@@ -1,6 +1,5 @@
 package com.api.common;
 
-import com.alibaba.fastjson.JSON;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,10 +71,6 @@ public class UtilFun {
         return ip != null && ip.length() != 0 && !"unkown".equalsIgnoreCase(ip)
                 && ip.split(".").length == 4;
     }
-    public static void prinrObject(Object o){
-        System.out.println(JSON.toJSONString(o));
-    }
-
 
     public  static  String DateToString(Date date,String fromat){
         SimpleDateFormat sdf = new SimpleDateFormat(fromat);

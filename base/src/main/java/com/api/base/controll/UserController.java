@@ -1,11 +1,11 @@
 package com.api.base.controll;
 
-import com.alibaba.fastjson.JSON;
 import com.api.base.config.auth.AuthUser;
 import com.api.base.config.auth.JwtTokenUtil;
 import com.api.base.model.Role;
 import com.api.base.model.User;
 import com.api.base.service.UserService;
+import com.api.common.JSONUtils;
 import com.api.common.wx.WxCommon;
 import com.api.core.controller.Ctrl;
 import com.api.core.annotation.PowerEnable;
@@ -82,7 +82,7 @@ public class UserController extends Ctrl {
     @PostMapping(value = "/add/role", name = "用户添加角色")
     @Caching(evict = {@CacheEvict(value = "role", key = "#userId"), @CacheEvict(value = "power", key = "#userId")})
     public Result addRole(String roles, Long userId) {
-        List<Long> roleids = JSON.parseArray(roles, Long.class);
+        List<Long> roleids = JSONUtils.json2list(roles, Long.class);
 
 
         return userService.addRole(roleids, userId);

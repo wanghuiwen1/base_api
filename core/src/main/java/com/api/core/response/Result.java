@@ -1,6 +1,7 @@
 package com.api.core.response;
 
-import com.alibaba.fastjson.JSON;
+
+import com.api.common.JSONUtils;
 
 /**
  * 统一API响应结果封装
@@ -44,6 +45,6 @@ public class Result {
 
     @Override
     public String toString() {
-        return JSON.toJSONString(this);
+        return JSONUtils.obj2json(this);
     }
 }
