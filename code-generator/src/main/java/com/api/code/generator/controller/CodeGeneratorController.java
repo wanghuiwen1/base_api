@@ -6,7 +6,6 @@ import com.api.core.annotation.PowerEnable;
 import com.api.core.response.Result;
 import com.api.core.response.ResultGenerator;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;

@@ -76,12 +76,7 @@ public class ${modelNameUpperCamel}Controller extends Ctrl{
                        @RequestParam(defaultValue = "10") Integer size) {
         PageHelper.startPage(page, size);
 
-        Condition c= new Condition(${modelNameUpperCamel}.class);
-        Example.Criteria criteria = c.createCriteria();
-
-        buildWhere(where, criteria);
-
-        List<${modelNameUpperCamel}> list = ${modelNameLowerCamel}Service.findByCondition(c);
+        List<${modelNameUpperCamel}> list = ${modelNameLowerCamel}Service.findAll();
         PageInfo<${modelNameUpperCamel}> pageInfo = new PageInfo<>(list);
         return ResultGenerator.genSuccessResult(pageInfo);
     }
