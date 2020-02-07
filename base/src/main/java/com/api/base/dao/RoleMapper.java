@@ -9,4 +9,6 @@ public interface RoleMapper extends Mapper<Role> {
     List<Role> getByUser(Long userId);
 
     void deletePower(Long roleId);
+
+    Role selectByDescription(String roleUser);
 }

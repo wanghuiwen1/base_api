@@ -18,4 +18,7 @@ public interface UserService extends Service<User> {
 
     Result addRole(List<Long> roles, Long userId);
 
+    Result updatePassword(String password, String oldpassword, Long id);
+
+    Result registered(String username, String password, String mobileNumber, Byte gender, String email, String nickname, String avatar);
 }

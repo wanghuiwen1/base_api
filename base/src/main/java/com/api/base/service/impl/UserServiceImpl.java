@@ -1,5 +1,6 @@
 package com.api.base.service.impl;
 
+import com.api.base.config.ProjectConstant;
 import com.api.base.dao.RoleMapper;
 import com.api.base.dao.UserMapper;
 import com.api.base.dao.UserRoleMapper;
@@ -12,6 +13,7 @@ import com.api.core.service.AbstractService;
 import com.api.core.response.ResultGenerator;
 import com.api.core.response.ResultEnum;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,6 +57,42 @@ public class UserServiceImpl extends AbstractService<User> implements UserServic
         userMapper.deleteRoleById(userId);
         if (userRoles.size() > 0)
             userRoleMapper.insertListNoAuto(userRoles);
+        return ResultGenerator.genSuccessResult();
+    }
+
+    @Override
+    public Result updatePassword(String password, String oldpassword, Long id) {
+        User user = findById(id);
+        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+
+        if (!bCryptPasswordEncoder.matches(oldpassword, user.getPassword())) {
+            return ResultGenerator.genResult(ResultEnum.PASSWORD_ERROR);
+        }
+
+        user.setPassword(bCryptPasswordEncoder.encode(password));
+        update(user);
+        return ResultGenerator.genSuccessResult();
+    }
+
+    @Override
+    public Result registered(String username, String password, String mobileNumber, Byte gender, String email, String nickname, String avatar) {
+        User user = new User();
+        user.setUsername(username);
+        user.setPassword(new BCryptPasswordEncoder().encode(password));
+        user.setMobileNumber(mobileNumber);
+        user.setGender(gender);
+        user.setEmail(email);
+        user.setNickname(nickname);
+        user.setAvatar(avatar);
+        save(user);
+
+        Role role = roleMapper.selectByDescription(ProjectConstant.ROLE_USER);
+        if (role == null) return ResultGenerator.genResult(ResultEnum.NO_CONTENT);
+
+        UserRole userRole = new UserRole();
+        userRole.setUserId(user.getId());
+        userRole.setRoleId(role.getId());
+        userRoleMapper.insertSelective(userRole);
         return ResultGenerator.genSuccessResult();
     }
 }

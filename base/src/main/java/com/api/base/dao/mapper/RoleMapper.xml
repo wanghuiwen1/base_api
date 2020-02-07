@@ -18,4 +18,7 @@
     <select id="deletePower" parameterType="java.lang.Long" >
       DELETE FROM sys_role_power WHERE role_id = #{roleId}
     </select>
+    <select id="selectByDescription" resultMap="BaseResultMap">
+        select * from sys_role where description = #{description}
+    </select>
 </mapper>

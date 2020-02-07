@@ -29,6 +29,8 @@ public enum ResultEnum implements IResultEnum {
     REDIS_CONNECTION_FAILUR("redis连接失败",400115),
     PARAMS_LACK("缺少参数",400116),
     MODULE_EXISTS("模块不存在",400117),
+    DUPLICATE_KEY("违反唯一约束",400118),
+    PASSWORD_ERROR("密码错误",400119),
     ;
 
     private final String message;

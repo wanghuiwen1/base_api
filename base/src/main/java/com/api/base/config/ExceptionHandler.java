@@ -6,6 +6,7 @@ import com.api.core.response.ResultEnum;
 import com.api.core.response.ResultGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.web.firewall.RequestRejectedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -30,7 +31,9 @@ public class ExceptionHandler {
             return ResultGenerator.genResult(ResultEnum.PARAMS_LACK);
         if (e instanceof ConnectException) return ResultGenerator.genResult(ResultEnum.CONNECT_EXCEPTION);
         if (e instanceof HttpRequestMethodNotSupportedException)
-            return ResultGenerator.genResult(ResultEnum.INTERNAL_SERVER_ERROR);
+            return ResultGenerator.genExceptionResult(e);
+        if (e instanceof DuplicateKeyException)
+            return ResultGenerator.genResult(ResultEnum.DUPLICATE_KEY);
         if (e instanceof RequestRejectedException) return ResultGenerator.genResult(ResultEnum.INTERNAL_SERVER_ERROR);
         if (e instanceof ServiceException) return ResultGenerator.genExceptionResult(e);
         return ResultGenerator.genExceptionResult();

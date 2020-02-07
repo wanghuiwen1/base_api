@@ -45,7 +45,7 @@ public class InitRunner implements CommandLineRunner {
 
     private void initRole() {
         for (Role r : ProjectConstant.initRole) {
-            if (roleService.findBy("description", ProjectConstant.ROLE_ADMIN) == null)
+            if (roleService.findBy("description", r.getDescription()) == null)
                 roleService.save(r);
         }
     }

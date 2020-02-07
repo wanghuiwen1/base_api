@@ -13,5 +13,6 @@ public final class ProjectConstant {
     static final String MAPPER_PACKAGE = BASE_PACKAGE + ".dao";//Mapper所在包
     static final String MAPPER_INTERFACE_REFERENCE = "com.api.core.Mapper";//Mapper插件基础接口的完全限定名
     public static final String ROLE_ADMIN="admin";
-    static final Role[] initRole={new Role("管理员",ROLE_ADMIN)};
+    public static final String ROLE_USER="user";
+    static final Role[] initRole={new Role("管理员",ROLE_ADMIN),new Role("普通用户",ROLE_USER)};
 }

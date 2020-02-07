@@ -43,13 +43,19 @@ public class UserController extends Ctrl {
 
     @Resource
     private JwtTokenUtil jwtTokenUtil;
+    @ApiOperation(value = "注册", tags = {"账号管理"}, notes = "注册")
+    @PostMapping(value = "/registered", name = "注册")
+    public Result registered(@RequestParam String username,
+                             @RequestParam String password,
+                             @RequestParam String mobileNumber,
+                             @RequestParam Byte gender,
+                             @RequestParam String email,
+                             @RequestParam String nickname,
+                             @RequestParam String avatar) {
 
-    @ApiOperation(value = "用户添加", tags = {"账号管理"}, notes = "用户添加")
-    @PostMapping(value = "/add", name = "用户添加")
-    public Result add(User user) {
-        userService.save(user);
-        return ResultGenerator.genSuccessResult();
+        return userService.registered(username,password,mobileNumber,gender,email,nickname,avatar);
     }
+
 
     @ApiOperation(value = "用户列表", tags = {"账号管理"}, notes = "用户列表")
     @ApiImplicitParams({
@@ -162,6 +168,17 @@ public class UserController extends Ctrl {
 
         Map<String, Object> res = WxCommon.getOpenId(appid, secret, jscode);
         return ResultGenerator.genSuccessResult(res);
+    }
+
+    @ApiOperation(value = "修改密码", tags = {"账号管理"}, notes = "修改密码")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "password", value = "新密码", dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "oldpassword", value = "旧密码", dataType = "String", paramType = "query"),
+    })
+    @PostMapping(value = "update/password", name = "修改密密")
+    public Result password(String password,String oldpassword,Authentication authentication) {
+        AuthUser authUser = (AuthUser) authentication.getPrincipal();
+        return userService.updatePassword(password,oldpassword,authUser.getId());
     }
 
 }
