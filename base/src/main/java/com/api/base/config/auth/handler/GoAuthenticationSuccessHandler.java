@@ -1,6 +1,6 @@
 package com.api.base.config.auth.handler;
 
-import com.api.base.config.auth.AuthUser;
+import com.api.core.config.AuthUser;
 import com.api.base.config.auth.JwtTokenUtil;
 import com.api.common.JSONUtils;
 import com.api.core.response.Result;
@@ -11,7 +11,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;

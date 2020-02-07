@@ -1,8 +1,11 @@
 package com.api.core.controller;
 
 import com.api.common.JSONUtils;
+import com.api.core.ServiceException;
+import com.api.core.config.AuthUser;
 import com.api.core.util.WhereLink;
 import com.api.core.util.WhereProperty;
+import org.springframework.security.core.Authentication;
 import tk.mybatis.mapper.entity.Example;
 
 import java.util.List;
@@ -23,6 +26,12 @@ public abstract class Ctrl {
             e.printStackTrace();
         }
 
+    }
+
+
+    protected AuthUser getAuthUser(Authentication authentication){
+        if(authentication == null) throw  new ServiceException("当前用户未登录");
+        return (AuthUser) authentication.getPrincipal();
     }
 
 }

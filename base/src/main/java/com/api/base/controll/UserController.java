@@ -1,6 +1,6 @@
 package com.api.base.controll;
 
-import com.api.base.config.auth.AuthUser;
+import com.api.core.config.AuthUser;
 import com.api.base.config.auth.JwtTokenUtil;
 import com.api.base.model.Role;
 import com.api.base.model.User;

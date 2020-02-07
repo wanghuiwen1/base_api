@@ -1,4 +1,4 @@
-package com.api.base.config.auth;
+package com.api.core.config;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
