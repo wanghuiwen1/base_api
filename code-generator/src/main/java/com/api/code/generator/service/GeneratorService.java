@@ -88,6 +88,10 @@ public class GeneratorService {
 
         context.addPluginConfiguration(p2);
 
+        PluginConfiguration mapperAnnotationPlugin = new PluginConfiguration();
+        mapperAnnotationPlugin.setConfigurationType("org.mybatis.generator.plugins.MapperAnnotationPlugin");
+        context.addPluginConfiguration(mapperAnnotationPlugin);
+
         context.setId("Potato");
         context.setTargetRuntime("MyBatis3Simple");
         context.addProperty(PropertyRegistry.CONTEXT_BEGINNING_DELIMITER, "`");

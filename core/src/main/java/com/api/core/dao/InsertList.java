@@ -5,13 +5,14 @@ import org.apache.ibatis.annotations.InsertProvider;
 import tk.mybatis.mapper.annotation.RegisterMapper;
 
 import java.util.List;
+import java.util.Map;
 
 @RegisterMapper
 public interface InsertList<T> {
 
     @InsertProvider(
             type = InsertListProvider.class,
-            method = "dynamicSQL"
+            method = "insertListNoAuto"
     )
     int insertListNoAuto(List<? extends T> var1);
 }

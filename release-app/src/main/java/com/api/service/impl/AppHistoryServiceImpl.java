@@ -1,7 +1,7 @@
 package com.api.service.impl;
 
 import com.api.core.service.AbstractService;
-import com.api.dao.AppHistoryMapper;
+import com.api.dao.AppHistoryApiMapper;
 import com.api.model.AppHistory;
 import com.api.service.AppHistoryService;
 import org.springframework.stereotype.Service;
@@ -19,7 +19,7 @@ import java.util.Map;
 @Transactional
 public class AppHistoryServiceImpl extends AbstractService<AppHistory> implements AppHistoryService {
     @Resource
-    private AppHistoryMapper appHistoryMapper;
+    private AppHistoryApiMapper appHistoryMapper;
 
 
     @Override

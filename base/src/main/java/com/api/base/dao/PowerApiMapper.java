@@ -3,12 +3,12 @@ package com.api.base.dao;
 
 import com.api.base.model.Power;
 import com.api.common.mybatis.ResultMap;
-import com.api.core.Mapper;
+import com.api.core.ApiMapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
-public interface PowerMapper extends Mapper<Power> {
+public interface PowerApiMapper extends ApiMapper<Power> {
 
     List<Power> getByUser(Long id);
 

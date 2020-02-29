@@ -1,7 +1,7 @@
 package com.api.core.service;
 
 
-import com.api.core.Mapper;
+import com.api.core.ApiMapper;
 import com.api.core.ServiceException;
 import org.apache.ibatis.exceptions.TooManyResultsException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,7 @@ import java.util.List;
 public abstract class AbstractService<T> implements Service<T> {
 
     @Autowired
-    protected Mapper<T> mapper;
+    protected ApiMapper<T> apiMapper;
 
     private Class<T> modelClass;    // 当前泛型真实类型的Class
 
@@ -28,32 +28,32 @@ public abstract class AbstractService<T> implements Service<T> {
 
     @Override
     public void save(T model) {
-        mapper.insertSelective(model);
+        apiMapper.insertSelective(model);
     }
 
     @Override
     public void save(List<T> models) {
-        mapper.insertList(models);
+        apiMapper.insertList(models);
     }
 
     @Override
     public void deleteById(Object id) {
-        mapper.deleteByPrimaryKey(id);
+        apiMapper.deleteByPrimaryKey(id);
     }
 
     @Override
     public void deleteByIds(String ids) {
-        mapper.deleteByIds(ids);
+        apiMapper.deleteByIds(ids);
     }
 
     @Override
     public void update(T model) {
-        mapper.updateByPrimaryKeySelective(model);
+        apiMapper.updateByPrimaryKeySelective(model);
     }
 
     @Override
     public T findById(Object id) {
-        return mapper.selectByPrimaryKey(id);
+        return apiMapper.selectByPrimaryKey(id);
     }
 
     @Override
@@ -63,7 +63,7 @@ public abstract class AbstractService<T> implements Service<T> {
             Field field = modelClass.getDeclaredField(fieldName);
             field.setAccessible(true);
             field.set(model, value);
-            return mapper.selectOne(model);
+            return apiMapper.selectOne(model);
         } catch (ReflectiveOperationException e) {
             throw new ServiceException(e.getMessage(), e);
         }
@@ -71,16 +71,16 @@ public abstract class AbstractService<T> implements Service<T> {
 
     @Override
     public List<T> findByIds(String ids) {
-        return mapper.selectByIds(ids);
+        return apiMapper.selectByIds(ids);
     }
 
     @Override
     public List<T> findByCondition(Condition condition) {
-        return mapper.selectByCondition(condition);
+        return apiMapper.selectByCondition(condition);
     }
 
     @Override
     public List<T> findAll() {
-        return mapper.selectAll();
+        return apiMapper.selectAll();
     }
 }

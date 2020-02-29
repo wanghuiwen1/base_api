@@ -1,6 +1,6 @@
 package com.api.base.service.impl;
 
-import com.api.base.dao.PowerMapper;
+import com.api.base.dao.PowerApiMapper;
 import com.api.base.model.Power;
 import com.api.base.service.PowerService;
 import com.api.common.mybatis.ResultMap;
@@ -20,7 +20,7 @@ import java.util.List;
 @Transactional
 public class PowerServiceImpl extends AbstractService<Power> implements PowerService {
     @Resource
-    private PowerMapper powerMapper;
+    private PowerApiMapper powerMapper;
 
     @Override
     @Cacheable(cacheNames = "power",key = "'all'")

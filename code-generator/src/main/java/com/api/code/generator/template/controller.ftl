@@ -66,18 +66,16 @@ public class ${modelNameUpperCamel}Controller extends Ctrl{
 
     @ApiOperation(value = "${businessName}列表信息", tags = {"${businessName}"}, notes = "${businessName}列表信息")
     @ApiImplicitParams({
-        @ApiImplicitParam(name = "where", value = "条件构建", dataType = "String", paramType = "query"),
+        @ApiImplicitParam(name = "search", value = "查询条件json", dataType = "String", paramType = "query"),
+        @ApiImplicitParam(name = "order", value = "排序json", dataType = "String", paramType = "query"),
         @ApiImplicitParam(name = "page", value = "页码", dataType = "String", paramType = "query"),
-        @ApiImplicitParam(name = "size", value = "每页显示的条数", dataType = "String", paramType = "query",defaultValue="10")
+        @ApiImplicitParam(name = "size", value = "每页显示的条数", dataType = "String", paramType = "query", defaultValue = "10")
     })
-    @PostMapping(value="/list",name="${businessName}列表信息")
-    public Result list(@RequestParam(defaultValue = "[]") String  where ,
+    @PostMapping(value = "/list", name = "${businessName}列表信息")
+    public Result list(@RequestParam(defaultValue = "{}") String search,
+                       @RequestParam(defaultValue = "{}") String order,
                        @RequestParam(defaultValue = "0") Integer page,
                        @RequestParam(defaultValue = "10") Integer size) {
-        PageHelper.startPage(page, size);
-
-        List<${modelNameUpperCamel}> list = ${modelNameLowerCamel}Service.findAll();
-        PageInfo<${modelNameUpperCamel}> pageInfo = new PageInfo<>(list);
-        return ResultGenerator.genSuccessResult(pageInfo);
+        return ${modelNameLowerCamel}Service.list(search, order, page, size);
     }
 }

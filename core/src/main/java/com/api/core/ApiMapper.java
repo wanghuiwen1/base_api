@@ -1,5 +1,6 @@
 package com.api.core;
 
+import com.api.core.dao.BaseList;
 import com.api.core.dao.InsertList;
 import tk.mybatis.mapper.common.BaseMapper;
 import tk.mybatis.mapper.common.ConditionMapper;
@@ -9,11 +10,13 @@ import tk.mybatis.mapper.common.special.InsertListMapper;
 /**
  * 定制版MyBatis Mapper插件接口，如需其他接口参考官方文档自行添加。
  */
-public interface Mapper<T>
+public interface ApiMapper<T>
         extends
         BaseMapper<T>,
         ConditionMapper<T>,
         IdsMapper<T>,
         InsertList<T>,
-        InsertListMapper<T>{
+        InsertListMapper<T>,
+        BaseList<T> {
+
 }

@@ -8,7 +8,7 @@ import tk.mybatis.spring.annotation.MapperScan;
 
 @SpringBootApplication
 @EnableCaching
-@MapperScan({"com.api.*.dao","com.api.base.dao"})
+@MapperScan({"com.api.**.dao","com.api.base.dao"})
 @ComponentScan(basePackages = {"com.api.**"})
 public class WebApplication {
 

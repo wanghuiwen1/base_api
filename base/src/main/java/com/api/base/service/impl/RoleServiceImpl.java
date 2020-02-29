@@ -1,7 +1,7 @@
 package com.api.base.service.impl;
 
-import com.api.base.dao.RoleMapper;
-import com.api.base.dao.RolePowerMapper;
+import com.api.base.dao.RoleApiMapper;
+import com.api.base.dao.RolePowerApiMapper;
 import com.api.base.model.Role;
 import com.api.base.model.RolePower;
 import com.api.base.service.RoleService;
@@ -22,9 +22,9 @@ import java.util.List;
 @Transactional
 public class RoleServiceImpl extends AbstractService<Role> implements RoleService {
     @Resource
-    private RoleMapper roleMapper;
+    private RoleApiMapper roleMapper;
     @Resource
-    private RolePowerMapper rolePowerMapper;
+    private RolePowerApiMapper rolePowerMapper;
 
     @Override
     @Transactional

@@ -1,6 +1,6 @@
 package com.api.base.service.impl;
 
-import com.api.base.dao.RolePowerMapper;
+import com.api.base.dao.RolePowerApiMapper;
 import com.api.base.model.RolePower;
 import com.api.base.service.RolePowerService;
 import com.api.core.service.AbstractService;
@@ -17,6 +17,6 @@ import javax.annotation.Resource;
 @Transactional
 public class RolePowerServiceImpl extends AbstractService<RolePower> implements RolePowerService {
     @Resource
-    private RolePowerMapper rolePowerMapper;
+    private RolePowerApiMapper rolePowerMapper;
 
 }

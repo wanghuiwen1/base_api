@@ -1,6 +1,6 @@
 package com.api.base.service.impl;
 
-import com.api.base.dao.UserRoleMapper;
+import com.api.base.dao.UserRoleApiMapper;
 import com.api.base.model.UserRole;
 import com.api.base.service.UserRoleService;
 import com.api.core.service.AbstractService;
@@ -17,6 +17,6 @@ import javax.annotation.Resource;
 @Transactional
 public class UserRoleServiceImpl extends AbstractService<UserRole> implements UserRoleService {
     @Resource
-    private UserRoleMapper userRoleMapper;
+    private UserRoleApiMapper userRoleMapper;
 
 }

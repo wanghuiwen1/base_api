@@ -1,6 +1,6 @@
 package com.api.base.service.impl;
 
-import com.api.base.dao.SysWhitelistMapper;
+import com.api.base.dao.SysWhitelistApiMapper;
 import com.api.base.model.SysWhitelist;
 import com.api.base.service.SysWhitelistService;
 import com.api.core.service.AbstractService;
@@ -21,7 +21,7 @@ import java.util.List;
 @Transactional
 public class SysWhitelistServiceImpl extends AbstractService<SysWhitelist> implements SysWhitelistService {
     @Resource
-    private SysWhitelistMapper sysWhitelistMapper;
+    private SysWhitelistApiMapper sysWhitelistMapper;
 
     @Override
     @Cacheable(cacheNames = "whiteList",key = "'whiteList'")
