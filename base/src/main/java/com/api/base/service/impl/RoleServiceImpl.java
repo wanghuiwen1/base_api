@@ -30,7 +30,7 @@ public class RoleServiceImpl extends AbstractService<Role> implements RoleServic
     @Transactional
     public void addPower(String powers,Long roleId) {
         roleMapper.deletePower(roleId);
-        List<Long> powerids = JSONUtils.json2list(powers,Long.class);
+        List<Long> powerids = JSONUtils.json2WrapperList(powers,Long.class);
 
         List<RolePower> rolePowers = new ArrayList<>();
         for (Long pid: powerids) {

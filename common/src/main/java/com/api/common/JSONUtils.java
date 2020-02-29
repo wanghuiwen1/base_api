@@ -2,6 +2,7 @@ package com.api.common;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
@@ -87,6 +88,20 @@ public class JSONUtils {
         }
         return result;
     }
+    /**
+     * 转换基本类型的list
+     */
+    public static <T> List<T> json2WrapperList(String jsonArrayStr, Class<T> clazz) {
+        List<T> list;
+        try {
+            JavaType javaType = objectMapper.getTypeFactory().constructParametricType(ArrayList.class, clazz);
+            list = objectMapper.readValue(jsonArrayStr, javaType);
+        } catch (IOException e) {
+            return new ArrayList<>();
+        }
+        return list;
+    }
+
 
     /**
      * map convert to javaBean
