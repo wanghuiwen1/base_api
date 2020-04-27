@@ -76,7 +76,6 @@ public class RoleController extends Ctrl {
     @PostMapping(value = "/add/power",name = "角色添加权限")
     @CacheEvict(value = "power",key = "#roleId")
     public Result addPower(String powers, Integer roleId){
-
         roleService.addPower( powers,roleId);
         return ResultGenerator.genSuccessResult();
     }

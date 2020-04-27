@@ -27,11 +27,9 @@ import java.util.Map;
 @Component
 public class InitRunner implements CommandLineRunner {
     Logger logger = LoggerFactory.getLogger(this.getClass());
-    @Resource
     private SysPowerService powerService;
     @Resource
     private SysRoleService roleService;
-
     @Autowired
     WebApplicationContext applicationContext;
     @Autowired
@@ -83,7 +81,6 @@ public class InitRunner implements CommandLineRunner {
                 if (StringUtils.isEmpty(url)) continue;
                 power.setUrl(url);
             }
-
             SysPower old = powerService.findBy("url", power.getUrl());
             power.setName(m.getKey().getName() == null ? power.getUrl() : m.getKey().getName());
             power.setPid(parent==null? -1 :parent.getId());

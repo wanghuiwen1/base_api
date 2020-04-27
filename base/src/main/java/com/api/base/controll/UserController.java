@@ -90,7 +90,6 @@ public class UserController extends Ctrl {
     public Result addRole(String roles, Long userId) {
         List<Integer> roleids = JSONUtils.json2WrapperList(roles, Integer.class);
 
-
         return userService.addRole(roleids, userId);
     }
 
