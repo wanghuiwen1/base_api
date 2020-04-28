@@ -27,6 +27,7 @@ public class SysRole implements Serializable {
     public SysRole() {
     }
 
+
     private static final long serialVersionUID = 1L;
 
     /**

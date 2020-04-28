@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class DetailsServic implements UserDetailsService {
@@ -32,29 +33,22 @@ public class DetailsServic implements UserDetailsService {
         if(user==null){
             throw new UsernameNotFoundException("用户不存在");
         }
+        //菜单控制
 
-        List<SysRole> roles = userService.getRole(user.getId());
+        List<String> roles =  userService.getMenu(user.getId()).stream()
+                .map(SysRole::getDescription).distinct()
+                .collect(Collectors.toList());
+
+        //api 权限控制
         List<GrantedAuthority> authorities = new ArrayList<>();
-        List<String> rolestr = new ArrayList<>();
-
-
-        List<SysPower> powers = new ArrayList<>();
-        for (SysRole r : roles) {
-            rolestr.add(r.getDescription());
-            authorities.add(new SimpleGrantedAuthority(r.getDescription()));
-            List<SysPower> powers1 = powerService.getByRole(r.getId());
-            if (powers1 != null) {
-                powers.addAll(powers1);
-            }
-        }
-
+        List<SysPower> powers = powerService.getByUser(user.getId());
         if (powers.size() > 0) {
             for (SysPower p : powers) {
                 authorities.add(new SimpleGrantedAuthority(p.getUrl()));
             }
         }
 
-        return new AuthUser(user.getUsername(), user.getPassword(), authorities, rolestr, user.getId(), user.getType(),user.getNickname(),user.getAvatar());
+        return new AuthUser(user.getUsername(), user.getPassword(), authorities, roles, user.getId(), user.getType(),user.getNickname(),user.getAvatar());
 
     }
 }

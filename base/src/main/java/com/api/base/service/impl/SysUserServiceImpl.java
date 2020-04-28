@@ -1,6 +1,7 @@
 package com.api.base.service.impl;
 
 import com.api.base.config.ProjectConstant;
+import com.api.base.config.RoleEnum;
 import com.api.base.dao.SysRoleMapper;
 import com.api.base.dao.SysUserMapper;
 import com.api.base.dao.SysUserRoleMapper;
@@ -34,14 +35,20 @@ public class SysUserServiceImpl extends AbstractService<SysUser> implements SysU
     @Resource
     private SysUserMapper userMapper;
     @Resource
-    private SysRoleMapper roleMapper;
+    private SysRoleMapper sysRoleMapper;
     @Resource
     private SysUserRoleMapper sysUserRoleMapper;
 
     @Override
     @Cacheable(cacheNames = "role", key = "#userId")
     public List<SysRole> getRole(Long userId) {
-        return roleMapper.getByUser(userId);
+        return sysRoleMapper.getByUser(userId,RoleEnum.API.getType());
+    }
+
+    @Override
+    @Cacheable(cacheNames = "menu", key = "#userId")
+    public List<SysRole> getMenu(Long userId) {
+        return sysRoleMapper.getByUser(userId, RoleEnum.MENU.getType());
     }
 
     @Override
@@ -89,7 +96,7 @@ public class SysUserServiceImpl extends AbstractService<SysUser> implements SysU
         user.setAvatar(avatar);
         save(user);
 
-        SysRole role = roleMapper.selectByDescription(ProjectConstant.ROLE_USER);
+        SysRole role = sysRoleMapper.selectByDescription(ProjectConstant.ROLE_USER);
         if (role == null) return ResultGenerator.genResult(ResultEnum.NO_CONTENT);
 
         SysUserRole userRole = new SysUserRole();

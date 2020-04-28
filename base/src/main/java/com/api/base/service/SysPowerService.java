@@ -15,4 +15,6 @@ public interface SysPowerService extends Service<SysPower> {
    List<ResultMap<String,Object>> listAll();
 
    List<SysPower>  getByRole(Integer roleId);
+
+   List<SysPower> getByUser(Long id);
 }

@@ -27,6 +27,7 @@ import java.util.Map;
 @Component
 public class InitRunner implements CommandLineRunner {
     Logger logger = LoggerFactory.getLogger(this.getClass());
+    @Resource
     private SysPowerService powerService;
     @Resource
     private SysRoleService roleService;

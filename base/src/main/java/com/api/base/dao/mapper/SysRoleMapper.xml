@@ -10,9 +10,11 @@
     <result column="description" jdbcType="VARCHAR" property="description" />
     <result column="type" jdbcType="INTEGER" property="type" />
   </resultMap>
-  <select id="getByUser" parameterType="java.lang.Long" resultType="com.api.base.model.SysRole">
-     SELECT r.* FROM (SELECT  * FROM sys_user_role WHERE user_id = #{userId}) u
-        LEFT JOIN sys_role r ON (r.id = u.role_id)
+  <select id="getByUser" parameterType="java.util.Map" resultType="com.api.base.model.SysRole">
+     SELECT r.* FROM
+     (SELECT  * FROM sys_user_role WHERE user_id = #{userId}) u
+        LEFT JOIN sys_role r ON (r.id = u.role_id )
+        where r.type = #{type}
    </select>
 
   <select id="deletePower" parameterType="java.lang.Long">

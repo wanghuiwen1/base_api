@@ -36,8 +36,12 @@ public class GoAuthenticationSuccessHandler implements AuthenticationSuccessHand
 
         String jwtToken = jwtTokenUtil.generateToken(userDetails.getUsername());
         userDetails.setPassword("");
-        res.put("info",userDetails);
+        res.put("role",userDetails.getRoles());
         res.put("token", jwtToken);
+        res.put("id", userDetails.getId());
+        res.put("nickname", userDetails.getNickname());
+        res.put("avatar", userDetails.getAvatar());
+        res.put("username", userDetails.getUsername());
 
         Result result = ResultGenerator.genResultAndData(ResultEnum.LOGIN_SUCCESS,res);
 

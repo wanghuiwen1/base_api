@@ -8,7 +8,7 @@ import java.util.List;
 
 @Mapper
 public interface SysRoleMapper extends ApiMapper<SysRole> {
-    List<SysRole> getByUser(Long userId);
+    List<SysRole> getByUser(Long userId, Integer type);
 
     void deletePower(Integer roleId);
 

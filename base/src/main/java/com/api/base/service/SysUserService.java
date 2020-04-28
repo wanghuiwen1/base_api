@@ -13,6 +13,8 @@ public interface SysUserService extends Service<SysUser> {
 
    List<SysRole> getRole(Long userId);
 
+   List<SysRole> getMenu(Long userId);
+
 
    Result addRole(List<Integer> roles, Long userId);
 

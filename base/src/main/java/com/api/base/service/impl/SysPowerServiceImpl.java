@@ -38,4 +38,10 @@ public class SysPowerServiceImpl extends AbstractService<SysPower> implements Sy
     public List<SysPower>  getByRole(Integer roleId) {
         return sysPowerMapper.getByRole(roleId);
     }
+
+    @Override
+    @Cacheable(cacheNames = "user:power",key = "#roleId")
+    public List<SysPower> getByUser(Long id) {
+        return sysPowerMapper.getByUser(id);
+    }
 }
