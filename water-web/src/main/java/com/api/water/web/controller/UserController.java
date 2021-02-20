@@ -1,4 +1,4 @@
-package com.api.base.controll;
+package com.api.water.web.controller;
 
 import com.api.base.model.SysRole;
 import com.api.base.model.SysUser;
@@ -11,6 +11,7 @@ import com.api.core.controller.Ctrl;
 import com.api.core.annotation.PowerEnable;
 import com.api.core.response.Result;
 import com.api.core.response.ResultGenerator;
+import com.api.water.web.service.UserManagerService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
@@ -25,6 +26,7 @@ import tk.mybatis.mapper.entity.Condition;
 import tk.mybatis.mapper.entity.Example;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +42,8 @@ import java.util.Map;
 public class UserController extends Ctrl {
     @Resource
     private SysUserService userService;
+    @Resource
+    private UserManagerService userManagerService;
 
     @Resource
     private JwtTokenUtil jwtTokenUtil;
@@ -51,9 +55,14 @@ public class UserController extends Ctrl {
                              @RequestParam Byte gender,
                              @RequestParam String email,
                              @RequestParam String nickname,
-                             @RequestParam String avatar) {
+                             @RequestParam String avatar,
+                             @RequestParam(required = false) String photoUrl,
+                             @RequestParam(required = false) String idcard,
+                             @RequestParam(required = false) Integer age,
+                             @RequestParam(required = false) Date birthday,
+                             @RequestParam(required = false) String address) {
 
-        return userService.registered(username,password,mobileNumber,gender,email,nickname,avatar);
+        return userManagerService.registered(username,password,mobileNumber,gender,email,nickname,avatar,photoUrl,idcard,age,birthday,address);
     }
 
 

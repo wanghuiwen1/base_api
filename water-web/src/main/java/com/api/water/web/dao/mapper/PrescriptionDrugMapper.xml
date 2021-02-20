@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.api.water.web.dao.PrescriptionDrugMapper">
+  <resultMap id="BaseResultMap" type="com.api.water.web.model.PrescriptionDrug">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="prescription_id" jdbcType="BIGINT" property="prescriptionId" />
+    <result column="drug_id" jdbcType="BIGINT" property="drugId" />
+    <result column="frequency" jdbcType="VARCHAR" property="frequency" />
+    <result column="way" jdbcType="VARCHAR" property="way" />
+    <result column="means" jdbcType="VARCHAR" property="means" />
+    <result column="start_time" jdbcType="TIMESTAMP" property="startTime" />
+    <result column="end_time" jdbcType="TIMESTAMP" property="endTime" />
+    <result column="morning" jdbcType="VARCHAR" property="morning" />
+    <result column="noon" jdbcType="VARCHAR" property="noon" />
+    <result column="night" jdbcType="VARCHAR" property="night" />
+    <result column="sleep" jdbcType="VARCHAR" property="sleep" />
+    <result column="morning_type" jdbcType="VARCHAR" property="morningType" />
+    <result column="noon_type" jdbcType="VARCHAR" property="noonType" />
+    <result column="night_type" jdbcType="VARCHAR" property="nightType" />
+    <result column="sleep_type" jdbcType="VARCHAR" property="sleepType" />
+    <result column="prohibit" jdbcType="TINYINT" property="prohibit" />
+  </resultMap>
+</mapper>

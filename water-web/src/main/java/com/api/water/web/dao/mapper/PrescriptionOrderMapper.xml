@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.api.water.web.dao.PrescriptionOrderMapper">
+  <resultMap id="BaseResultMap" type="com.api.water.web.model.PrescriptionOrder">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="order_status" jdbcType="TINYINT" property="orderStatus" />
+    <result column="amount" jdbcType="DECIMAL" property="amount" />
+    <result column="transport_num" jdbcType="VARCHAR" property="transportNum" />
+    <result column="verify_id" jdbcType="BIGINT" property="verifyId" />
+    <result column="verify_time" jdbcType="TIMESTAMP" property="verifyTime" />
+    <result column="verify_remark" jdbcType="VARCHAR" property="verifyRemark" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="address" jdbcType="VARCHAR" property="address" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="doctor_id" jdbcType="BIGINT" property="doctorId" />
+    <result column="invoice_id" jdbcType="BIGINT" property="invoiceId" />
+    <result column="signature" jdbcType="VARCHAR" property="signature" />
+    <result column="order_type" jdbcType="TINYINT" property="orderType" />
+    <result column="sender" jdbcType="BIGINT" property="sender" />
+  </resultMap>
+</mapper>

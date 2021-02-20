@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.api.water.web.dao.WechatMessageMapper">
+  <resultMap id="BaseResultMap" type="com.api.water.web.model.WechatMessage">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="to_user_name" jdbcType="VARCHAR" property="toUserName" />
+    <result column="from_user_name" jdbcType="VARCHAR" property="fromUserName" />
+    <result column="create_time" jdbcType="BIGINT" property="createTime" />
+    <result column="msg_type" jdbcType="VARCHAR" property="msgType" />
+    <result column="content" jdbcType="VARCHAR" property="content" />
+    <result column="msg_id" jdbcType="VARCHAR" property="msgId" />
+    <result column="pic_url" jdbcType="VARCHAR" property="picUrl" />
+    <result column="media_id" jdbcType="VARCHAR" property="mediaId" />
+    <result column="format" jdbcType="VARCHAR" property="format" />
+    <result column="recognition" jdbcType="VARCHAR" property="recognition" />
+    <result column="thumb_media_id" jdbcType="VARCHAR" property="thumbMediaId" />
+    <result column="location_x" jdbcType="VARCHAR" property="locationX" />
+    <result column="location_y" jdbcType="VARCHAR" property="locationY" />
+    <result column="scale" jdbcType="VARCHAR" property="scale" />
+    <result column="label" jdbcType="VARCHAR" property="label" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+    <result column="url" jdbcType="VARCHAR" property="url" />
+    <result column="event" jdbcType="VARCHAR" property="event" />
+    <result column="event_key" jdbcType="VARCHAR" property="eventKey" />
+    <result column="ticket" jdbcType="VARCHAR" property="ticket" />
+    <result column="latitude" jdbcType="VARCHAR" property="latitude" />
+    <result column="longitude" jdbcType="VARCHAR" property="longitude" />
+    <result column="precision_local" jdbcType="VARCHAR" property="precisionLocal" />
+  </resultMap>
+</mapper>

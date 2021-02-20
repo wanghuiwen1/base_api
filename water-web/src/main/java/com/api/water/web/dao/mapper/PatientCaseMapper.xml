@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.api.water.web.dao.PatientCaseMapper">
+  <resultMap id="BaseResultMap" type="com.api.water.web.model.PatientCase">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="uid" jdbcType="BIGINT" property="uid" />
+    <result column="date_of_visit" jdbcType="TIMESTAMP" property="dateOfVisit" />
+    <result column="main_suit" jdbcType="VARCHAR" property="mainSuit" />
+    <result column="history_of_present_illness" jdbcType="VARCHAR" property="historyOfPresentIllness" />
+    <result column="history_of_past_illness" jdbcType="VARCHAR" property="historyOfPastIllness" />
+    <result column="physical_examination" jdbcType="VARCHAR" property="physicalExamination" />
+    <result column="diagnosis_result" jdbcType="VARCHAR" property="diagnosisResult" />
+    <result column="prescription" jdbcType="VARCHAR" property="prescription" />
+    <result column="dos_and_donts" jdbcType="VARCHAR" property="dosAndDonts" />
+    <result column="doctor_id" jdbcType="BIGINT" property="doctorId" />
+    <result column="autograph_url" jdbcType="VARCHAR" property="autographUrl" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+  </resultMap>
+</mapper>
