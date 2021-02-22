@@ -9,4 +9,54 @@
     <id column="user_id" jdbcType="BIGINT" property="userId" />
     <result column="last_read" jdbcType="INTEGER" property="lastRead" />
   </resultMap>
+
+
+  <select id="userList" parameterType="java.util.Map" resultType="com.api.common.mybatis.ResultMap">
+    select ui.id,
+       ui.name,
+       ui.user_id,
+       0                                               as groupLeader,
+       ''                                              as ksid,
+       ''                                              as ksName,
+       ''                                              as hospitalid,
+       ''                                              as hospital_name,
+       0                                               as type
+    from
+       (select * from follow_user where follow_id =#{followId}) a
+           left join user_info ui on (ui.user_id = a.user_id)
+    where
+       ui.id is not null
+    union all
+    select
+       di.id,
+       di.name,
+       di.user_id,
+       case when di.id = f.doctor_id then 1 else 0 end as groupLeader
+        ,
+       d.ksid,
+       d.name                                          as ksName,
+       h.hospitalid,
+       h.hospital_name,
+       di.type
+    from
+       (select * from follow_user where follow_id =#{followId}) a
+           left join doctor_info di on (di.user_id = a.user_id)
+           left join follow f on f.id = a.follow_id
+           left join department d on d.ksid = di.ks_id
+           left join hospital h on h.hospitalid = d.hospital_id
+
+    where
+       di.id is not null
+
+
+
+  </select>
+    <select id="listUserId" parameterType="java.util.Map" resultType="java.lang.Long">
+    select user_id from follow_user where follow_id = #{followId}
+  </select>
+    <update id="read">
+      UPDATE follow_user
+      SET last_read = #{lastRead}
+      WHERE  follow_id = #{followId} and  user_id = #{userId}
+    </update>
 </mapper>

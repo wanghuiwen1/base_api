@@ -64,18 +64,18 @@ public class FollowUserController extends Ctrl{
         return ResultGenerator.genSuccessResult(followUser);
     }
 
-    @ApiOperation(value = "随访人员列表信息", tags = {"随访人员"}, notes = "随访人员列表信息")
-    @ApiImplicitParams({
-        @ApiImplicitParam(name = "search", value = "查询条件json", dataType = "String", paramType = "query"),
-        @ApiImplicitParam(name = "order", value = "排序json", dataType = "String", paramType = "query"),
-        @ApiImplicitParam(name = "page", value = "页码", dataType = "String", paramType = "query"),
-        @ApiImplicitParam(name = "size", value = "每页显示的条数", dataType = "String", paramType = "query", defaultValue = "10")
-    })
-    @PostMapping(value = "/list", name = "随访人员列表信息")
-    public Result list(@RequestParam(defaultValue = "{}") String search,
-                       @RequestParam(defaultValue = "{}") String order,
-                       @RequestParam(defaultValue = "0") Integer page,
-                       @RequestParam(defaultValue = "10") Integer size) {
-        return followUserService.list(search, order, page, size);
-    }
+//    @ApiOperation(value = "随访人员列表信息", tags = {"随访人员"}, notes = "随访人员列表信息")
+//    @ApiImplicitParams({
+//        @ApiImplicitParam(name = "search", value = "查询条件json", dataType = "String", paramType = "query"),
+//        @ApiImplicitParam(name = "order", value = "排序json", dataType = "String", paramType = "query"),
+//        @ApiImplicitParam(name = "page", value = "页码", dataType = "String", paramType = "query"),
+//        @ApiImplicitParam(name = "size", value = "每页显示的条数", dataType = "String", paramType = "query", defaultValue = "10")
+//    })
+//    @PostMapping(value = "/list", name = "随访人员列表信息")
+//    public Result list(@RequestParam(defaultValue = "{}") String search,
+//                       @RequestParam(defaultValue = "{}") String order,
+//                       @RequestParam(defaultValue = "0") Integer page,
+//                       @RequestParam(defaultValue = "10") Integer size) {
+//        return followUserService.list(search, order, page, size);
+//    }
 }

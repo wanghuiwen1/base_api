@@ -1,16 +1,16 @@
 package com.api.common.wx.pay;
 
+import com.api.common.wx.pay.WXPayConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ResourceUtils;
 
 import java.io.*;
 
-@Component
-@ConfigurationProperties("wx.config")
 public class WXConfig extends WXPayConfig {
 
     Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -21,6 +21,8 @@ public class WXConfig extends WXPayConfig {
 
     private String key;
 
+    private String secret;
+
     private byte[] certData;
 
     private String certPath;
@@ -29,6 +31,15 @@ public class WXConfig extends WXPayConfig {
 
     private IWXPayDomain wXPayDomain;
 
+    public WXConfig(String appID, String mchID, String key, String secret, String certPath, String notifyUrl) {
+        this.appID = appID;
+        this.mchID = mchID;
+        this.key = key;
+        this.secret = secret;
+        this.certPath = certPath;
+        this.notifyUrl = notifyUrl;
+        this.setCertPath(certPath);
+    }
 
     @Override
     public String getAppID() {
@@ -47,21 +58,23 @@ public class WXConfig extends WXPayConfig {
 
     @Override
     public InputStream getCertStream() {
-        return new ByteArrayInputStream(this.certData);
+        ByteArrayInputStream certBis = new ByteArrayInputStream(this.certData);
+        return certBis;
     }
 
     @Override
     public IWXPayDomain getWXPayDomain(){
-        return new IWXPayDomain() {
+        IWXPayDomain iwxPayDomain = new IWXPayDomain() {
             @Override
             public void report(String domain, long elapsedTimeMillis, Exception ex) {
 
             }
             @Override
             public DomainInfo getDomain(WXPayConfig config) {
-                return new DomainInfo(WXPayConstants.DOMAIN_API, true);
+                return new IWXPayDomain.DomainInfo(WXPayConstants.DOMAIN_API, true);
             }
         };
+        return iwxPayDomain;
     }
 
     public void setAppID(String appID) {
@@ -81,27 +94,35 @@ public class WXConfig extends WXPayConfig {
         return certPath;
     }
 
-    public void setCertPath(String certPath) throws IOException {
-        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-        ResourceLoader resourceLoader = new DefaultResourceLoader();
-        InputStream certStream = resourceLoader.getResource(certPath).getInputStream();
-
-        int b;
-        while ((b = certStream.read()) != -1) {
-            outStream.write(b);
+    public void setCertPath(String certPath) {
+        try {
+            ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+            ResourceLoader resourceLoader = new DefaultResourceLoader();
+            InputStream certStream = resourceLoader.getResource(certPath).getInputStream();
+            int b = -1;
+            while ((b = certStream.read()) != -1) {
+                outStream.write(b);
+            }
+            this.certData = outStream.toByteArray();
+            outStream.close();
+            certStream.close();
+            this.certPath = certPath;
+        }catch (Exception e){
+            e.printStackTrace();
         }
-        this.certData = outStream.toByteArray();
-        outStream.close();
-        certStream.close();
-        this.certPath = certPath;
 
+
+    }
+
+    public String getSecret() {
+        return secret;
+    }
+
+    public void setSecret(String secret) {
+        this.secret = secret;
     }
 
     public String getNotifyUrl() {
         return notifyUrl;
-    }
-
-    public void setNotifyUrl(String notifyUrl) {
-        this.notifyUrl = notifyUrl;
     }
 }

@@ -11,4 +11,16 @@
     <result column="end_time" jdbcType="TIMESTAMP" property="endTime" />
     <result column="price" jdbcType="DECIMAL" property="price" />
   </resultMap>
+  <update id="updateBydoctorId">
+      UPDATE  follow_setting
+      SET start_time = #{startTime},
+      end_time = #{endTime},
+      price = #{price},
+      time = #{time},
+      integral=#{integral}
+      WHERE doctor_id = #{doctorId}
+    </update>
+  <select id="selectByDoctorId" parameterType="java.util.Map" resultMap="BaseResultMap">
+        select * from follow_setting where doctor_id = #{doctorId}
+  </select>
 </mapper>

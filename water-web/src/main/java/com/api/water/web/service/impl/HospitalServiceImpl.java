@@ -1,8 +1,8 @@
 package com.api.water.web.service.impl;
 
-import com.api.water.web.dao.DoctorInfoMapper;
-import com.api.water.web.model.DoctorInfo;
-import com.api.water.web.service.DoctorInfoService;
+import com.api.water.web.dao.HospitalMapper;
+import com.api.water.web.model.Hospital;
+import com.api.water.web.service.HospitalService;
 import com.api.core.service.AbstractService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,9 +22,9 @@ import com.github.pagehelper.PageInfo;
  */
 @Service
 @Transactional
-public class DoctorInfoServiceImpl extends AbstractService<DoctorInfo> implements DoctorInfoService {
+public class HospitalServiceImpl extends AbstractService<Hospital> implements HospitalService {
     @Resource
-    private DoctorInfoMapper doctorInfoMapper;
+    private HospitalMapper hospitalMapper;
 
     @Override
     public Result list(String search, String order, Integer page, Integer size){
@@ -35,7 +35,7 @@ public class DoctorInfoServiceImpl extends AbstractService<DoctorInfo> implement
                 if (orderParams.get(key) != null && orderParams.get(key).equals("descending")) orderParams.put(key, "desc");
             }
         PageHelper.startPage(page, size);
-        List<Map<String, Object>> res = doctorInfoMapper.baseList(params, orderParams);
+        List<Map<String, Object>> res = hospitalMapper.baseList(params, orderParams);
         PageInfo<Map<String, Object>> pageInfo = new PageInfo<>(res);
         return ResultGenerator.genSuccessResult(pageInfo);
     }

@@ -1,16 +1,131 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.api.water.web.dao.FollowMapper">
-  <resultMap id="BaseResultMap" type="com.api.water.web.model.Follow">
-    <!--
-      WARNING - @mbg.generated
-    -->
-    <id column="id" jdbcType="BIGINT" property="id" />
-    <result column="uid" jdbcType="BIGINT" property="uid" />
-    <result column="whoset" jdbcType="BIGINT" property="whoset" />
-    <result column="group_chat_id" jdbcType="VARCHAR" property="groupChatId" />
-    <result column="status" jdbcType="BIT" property="status" />
-    <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
-    <result column="doctor_id" jdbcType="BIGINT" property="doctorId" />
-  </resultMap>
+    <resultMap id="BaseResultMap" type="com.api.water.web.model.Follow">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="uid" jdbcType="BIGINT" property="uid"/>
+        <result column="whoset" jdbcType="BIGINT" property="whoset"/>
+        <result column="group_chat_id" jdbcType="VARCHAR" property="groupChatId"/>
+        <result column="status" jdbcType="BIT" property="status"/>
+        <result column="create_date" jdbcType="TIMESTAMP" property="createDate"/>
+        <result column="doctor_id" jdbcType="BIGINT" property="doctorId"/>
+    </resultMap>
+
+    <select id="doctorFollowList" resultType="java.util.Map">
+        SELECT
+       uin.name              as name,
+       i.name as docName,
+       uin.photo,
+       uin.id                as uid,
+       uin.uid               as userid,
+       f.id,
+       f.STATUS              as status,
+       f.group_chat_id       as groupid,
+       IFNULL(fmm.countt, 0) AS count,
+       ifnull(FROM_UNIXTIME( lfm.create_date, '%Y-%m-%d %H:%i:%s' ) ,f.create_date) as create_date,
+       ifnull(lfm.message,'暂无消息') message,
+       ifnull(lfm.create_date*1000,null) lastTime
+    FROM (
+           SELECT id,
+                  doctor_id,
+                  group_chat_id,
+                  create_date,
+                  STATUS,
+                  uid
+               FROM follow
+
+       ) f
+           LEFT JOIN (
+        SELECT
+             ui.user_id                         AS uid,
+             ui.NAME,
+             ui.photo_url                       AS photo,
+             ui.id
+             FROM user_info ui
+            ) uin ON (uin.uid = f.uid)
+            LEFT JOIN (
+            SELECT fm.follow_id,
+            max(id)          id,
+            count(*) AS      countt
+            FROM follow_message fm
+            WHERE fm.create_date >=
+             (SELECT fu.last_read FROM follow_user fu WHERE fu.user_id = #{userId} AND fu.follow_id = fm.follow_id)
+            AND fm.sender != #{userId} group by follow_id
+            ) fmm ON (fmm.follow_id = f.id)
+            left join (
+            select message,type,id,follow_id,create_date
+            from (select max(create_date) createDate, follow_id as mid from follow_message group by follow_id) mfm
+            left join follow_message on (mfm.createDate = create_date and mfm.mid = follow_id)
+            ) lfm on (lfm.follow_id = f.id)
+            LEFT JOIN doctor_info i on(i.id = f.doctor_id)
+            WHERE f.status=2
+            order by count desc,create_date desc
+
+    </select>
+    <select id="commonFollowList" resultType="java.util.Map">
+        SELECT
+            concat(i.NAME,'-',ui.name)  AS name,
+            i.head AS photo,
+            f.group_chat_id AS groupid,
+            f.id,
+            f.doctor_id,
+            f.STATUS as status,
+            IFNULL( fmm.countt, 0 ) AS count,
+            IFNULL( ( SELECT message FROM follow_message WHERE follow_id = f.id AND sender != #{userId} ORDER BY id DESC LIMIT 1 ), '暂无消息' ) AS message,
+            IFNULL( ( SELECT type FROM follow_message WHERE follow_id = f.id AND sender != #{userId} ORDER BY id DESC LIMIT 1 ), null ) AS type,
+            IFNULL( ( SELECT create_date*1000 FROM follow_message WHERE follow_id = f.id  ORDER BY id DESC LIMIT 1),null) AS lastTime,
+            IFNULL(
+                ( SELECT FROM_UNIXTIME( create_date, '%Y-%m-%d %H:%i:%s' ) FROM follow_message WHERE follow_id = f.id AND sender != #{userId} ORDER BY id DESC LIMIT 1 ),
+                f.create_date
+            ) AS create_date
+        FROM
+            ( SELECT id, doctor_id, group_chat_id, create_date, STATUS,uid FROM follow af WHERE  exists(select * from follow_user afu where user_id = #{userId}  and  af.id = afu.follow_id )) f
+            LEFT JOIN doctor_info i ON ( f.doctor_id = i.id )
+            LEFT JOIN (
+            SELECT
+                fm.follow_id,
+                count( * ) AS countt
+            FROM
+                follow_message fm
+            WHERE
+                fm.create_date >= ( SELECT fu.last_read FROM follow_user fu WHERE fu.user_id = #{userId} AND fu.follow_id = fm.follow_id )
+            AND fm.sender != #{userId} group by fm.follow_id
+            ) fmm ON ( fmm.follow_id = f.id )
+           left join user_info ui on (ui.user_id=f.uid)
+    </select>
+    <select id="detail" resultType="java.util.Map">
+SELECT * FROM (SELECT
+                   fm.id,  fm.follow_id,  fm.sender,  FROM_UNIXTIME( fm.create_date, '%Y-%m-%d %H:%i:%s' ) AS create_date,  fm.message,  fm.type,  fm.audio_length,  fm.screen,
+                   ui.NAME AS userName,
+                   ui.photo_url AS userPhoto,
+                   u.type AS userType,
+                   f.doctor_id AS doctorCaptain
+                   FROM
+                   follow_message fm
+                       LEFT JOIN user_info ui ON ( fm.sender = ui.user_id )
+                       LEFT JOIN sys_user u ON (fm.sender = u.id)
+                       LEFT JOIN follow f ON (fm.follow_id = f.id)
+                   WHERE
+                   fm.follow_id = #{followId} and ui.user_id is not null
+                   union
+                   all
+                   SELECT
+                   fm.id,  fm.follow_id,  fm.sender,  FROM_UNIXTIME( fm.create_date, '%Y-%m-%d %H:%i:%s' ) AS create_date,  fm.message,  fm.type,  fm.audio_length,  fm.screen,
+                   di.NAME AS userName,
+                   di.head AS userPhoto,
+                   u.type AS userType,
+                   f.doctor_id AS doctorCaptain
+                   FROM
+                   follow_message fm
+                       LEFT JOIN doctor_info di ON ( fm.sender = di.user_id )
+                       LEFT JOIN sys_user u on (fm.sender = u.id)
+                       LEFT JOIN follow f ON (fm.follow_id = f.id)
+                   WHERE
+                   fm.follow_id = #{followId} and di.user_id is not null) f ORDER BY create_date
+    </select>
+
+
 </mapper>

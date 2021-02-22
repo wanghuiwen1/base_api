@@ -1,11 +1,14 @@
 package com.api.water.web.controller;
+import com.api.core.config.AuthUser;
 import com.api.core.controller.Ctrl;
 import com.api.core.response.Result;
 import com.api.core.response.ResultGenerator;
 import com.api.water.web.model.Follow;
 import com.api.water.web.service.FollowService;
+import com.api.water.web.service.FollowUserService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -13,7 +16,10 @@ import org.springframework.web.bind.annotation.RestController;
 import tk.mybatis.mapper.entity.Condition;
 import tk.mybatis.mapper.entity.Example;
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Map;
+
 import com.api.core.annotation.PowerEnable;
 import io.swagger.annotations.*;
 
@@ -29,53 +35,67 @@ import io.swagger.annotations.*;
 public class FollowController extends Ctrl{
     @Resource
     private FollowService followService;
+    @Resource
+    private FollowUserService followUserService;
 
-    @ApiOperation(value = "随访添加", tags = {"随访"}, notes = "随访添加")
-    @PostMapping(value="/add",name="随访添加")
-    public Result add(@ApiParam Follow follow) {
-        followService.save(follow);
-        return ResultGenerator.genSuccessResult();
+    @ApiOperation(value = "发起咨询", tags = {"随访"}, notes = "发起咨询")
+    @PostMapping(value = "/add",name = "发起咨询")
+    public Result add(HttpServletRequest request, Authentication authentication, @ApiParam Follow follow, String openid,  @RequestParam(defaultValue = "JSAPI") String tradeType) {
+        return followService.add(request,authentication,follow,openid,tradeType);
+    }
+    @PostMapping(value = "/checkSetting",name = "检查设置")
+    public Result checkSetting(Long docId) {
+        return followService.checkSetting(docId);
     }
 
-    @ApiOperation(value = "随访删除", tags = {"随访"}, notes = "随访删除")
+
+
+    @ApiOperation(value = "咨询列表", tags = {"随访"}, notes = "咨询列表")
     @ApiImplicitParams({
-        @ApiImplicitParam(name = "id",required=true, value = "随访id", dataType = "Long", paramType = "query")
+            @ApiImplicitParam(name = "isvip", value = "是否是vip", dataType = "Long", paramType = "query"),
+            @ApiImplicitParam(name = "page", value = "页码", dataType = "Integer", paramType = "query"),
+            @ApiImplicitParam(name = "size", value = "条数", dataType = "Integer", paramType = "query"),
     })
-    @PostMapping(value="/delete",name="随访删除")
-    public Result delete(@RequestParam Long id) {
-        followService.deleteById(id);
-        return ResultGenerator.genSuccessResult();
+    @PostMapping(value = "/list" ,name = "咨询列表")
+    public Result list(Authentication authentication,@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "10") Integer size) {
+        AuthUser authUser = (AuthUser)authentication.getPrincipal();
+        return followService.followList(authUser.getId(), authUser.getType(),page,size);
     }
 
-    @ApiOperation(value = "随访修改", tags = {"随访"}, notes = "随访修改,对象主键必填")
-    @PostMapping(value="/update",name="随访修改")
-    public Result update(@ApiParam Follow follow) {
-        followService.update(follow);
-        return ResultGenerator.genSuccessResult();
-    }
-
-    @ApiOperation(value = "随访详细信息", tags = {"随访"}, notes = "随访详细信息")
+    @ApiOperation(value = "咨询详情", tags = {"随访"}, notes = "咨询详情")
     @ApiImplicitParams({
-        @ApiImplicitParam(name = "id",required=true, value = "随访id", dataType = "Long", paramType = "query")
+            @ApiImplicitParam(name = "followId", value = "随访ID", dataType = "Long", paramType = "query"),
+            @ApiImplicitParam(name = "page", value = "页码", dataType = "Integer", paramType = "query"),
+            @ApiImplicitParam(name = "size", value = "条数", dataType = "Integer", paramType = "query"),
     })
-    @PostMapping(value="/detail",name="随访详细信息")
-    public Result detail(@RequestParam Integer id) {
-        Follow follow = followService.findById(id);
-        return ResultGenerator.genSuccessResult(follow);
+    @PostMapping(value = "/detail" ,name = "咨询详情")
+    public Result detail(Long followId, @RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "10") Integer size) {
+        /*PageHelper.startPage(page, size);*/
+        List<Map> detail = followService.detail(followId);
+        /*PageInfo pageInfo = new PageInfo<>(detail);*/
+        return ResultGenerator.genSuccessResult(detail);
     }
 
-    @ApiOperation(value = "随访列表信息", tags = {"随访"}, notes = "随访列表信息")
+    @PostMapping(value = "/getChat" ,name = "获取聊天")
+    public Result getChat(Long followId) {
+        return followService.getChat(followId);
+    }
+
+    @ApiOperation(value = "获取当前群组的所有用户", tags = {"随访"}, notes = "获取当前群组的所有用户")
     @ApiImplicitParams({
-        @ApiImplicitParam(name = "search", value = "查询条件json", dataType = "String", paramType = "query"),
-        @ApiImplicitParam(name = "order", value = "排序json", dataType = "String", paramType = "query"),
-        @ApiImplicitParam(name = "page", value = "页码", dataType = "String", paramType = "query"),
-        @ApiImplicitParam(name = "size", value = "每页显示的条数", dataType = "String", paramType = "query", defaultValue = "10")
+            @ApiImplicitParam(name = "followId", value = "随访ID", dataType = "Long", paramType = "query"),
     })
-    @PostMapping(value = "/list", name = "随访列表信息")
-    public Result list(@RequestParam(defaultValue = "{}") String search,
-                       @RequestParam(defaultValue = "{}") String order,
-                       @RequestParam(defaultValue = "0") Integer page,
-                       @RequestParam(defaultValue = "10") Integer size) {
-        return followService.list(search, order, page, size);
+    @PostMapping(value = "/user/list" ,name = "获取当前群组的所有用户")
+    public Result get(Long followId) {
+        return followUserService.getUserList(followId);
+    }
+
+    @ApiOperation(value = "获取随访", tags = {"随访"}, notes = "获取随访")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "followId", value = "随访ID", dataType = "Long", paramType = "query"),
+    })
+    @PostMapping(value = "/get/by" ,name = "获取当前群组的所有用户")
+    public Result getById(Long followId) {
+        return ResultGenerator.genSuccessResult(followService.findById(followId));
     }
 }

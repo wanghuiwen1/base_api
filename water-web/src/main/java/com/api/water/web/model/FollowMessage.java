@@ -19,7 +19,7 @@ public class FollowMessage implements Serializable {
 
     private String message;
 
-    private Boolean type;
+    private Integer type;
 
     @Column(name = "audio_length")
     private Integer audioLength;
@@ -101,14 +101,14 @@ public class FollowMessage implements Serializable {
     /**
      * @return type
      */
-    public Boolean getType() {
+    public Integer getType() {
         return type;
     }
 
     /**
      * @param type
      */
-    public void setType(Boolean type) {
+    public void setType(Integer type) {
         this.type = type;
     }
 

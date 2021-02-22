@@ -7,6 +7,12 @@ import javax.persistence.*;
 
 @Table(name = "follow_order")
 public class FollowOrder implements Serializable {
+    //已支付
+    public final static Integer STATUS_PAY=1;
+    //未支付
+    public final static Integer STATUS_WAITPAY=2;
+    //已退款
+    public final static Integer STATUS_REFUND=3;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

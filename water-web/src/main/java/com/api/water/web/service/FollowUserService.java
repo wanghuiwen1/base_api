@@ -8,5 +8,7 @@ import com.api.core.response.Result;
  */
 public interface FollowUserService extends Service<FollowUser> {
    Result list(String search, String order, Integer page, Integer size);
+   void inspectors (Long doctorId,Long followId);
+   Result getUserList(Long followId);
 
 }

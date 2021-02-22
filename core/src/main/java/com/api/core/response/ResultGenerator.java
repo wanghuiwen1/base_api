@@ -12,7 +12,12 @@ public class ResultGenerator {
     public static Result genSuccessResult(Object data) {
         return new Result(ResultEnum.SUCCESS_MESSAGE,data);
     }
-
+    public static Result genSuccessResult(Object data, String message) {
+        return new Result()
+                .setCode(ResultCode.SUCCESS)
+                .setMessage(message)
+                .setData(data);
+    }
 
     public static Result genCreatedSuccessResult() {
         return new Result(ResultEnum.CREATED);
@@ -59,5 +64,8 @@ public class ResultGenerator {
 
     public static Result genExceptionResult(Exception e) {
         return new Result(e);
+    }
+    public static Result genFailResultAddressNull() {
+        return new Result(ResultEnum.ADDRESSNULL);
     }
 }

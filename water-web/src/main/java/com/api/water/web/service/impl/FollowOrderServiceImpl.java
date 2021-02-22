@@ -26,17 +26,11 @@ public class FollowOrderServiceImpl extends AbstractService<FollowOrder> impleme
     @Resource
     private FollowOrderMapper followOrderMapper;
 
+
     @Override
-    public Result list(String search, String order, Integer page, Integer size){
-        Map<String, Object> params = JSONUtils.json2map(search);
-        Map<String, Object> orderParams = JSONUtils.json2map(order);
-        for (String key : orderParams.keySet()) {
-                if (orderParams.get(key) != null && orderParams.get(key).equals("ascending")) orderParams.put(key, "asc");
-                if (orderParams.get(key) != null && orderParams.get(key).equals("descending")) orderParams.put(key, "desc");
-            }
-        PageHelper.startPage(page, size);
-        List<Map<String, Object>> res = followOrderMapper.baseList(params, orderParams);
-        PageInfo<Map<String, Object>> pageInfo = new PageInfo<>(res);
-        return ResultGenerator.genSuccessResult(pageInfo);
+    public Result list(Long id) {
+        List<Map<String,Object>> res = followOrderMapper.list(id);
+
+        return ResultGenerator.genSuccessResult(res);
     }
 }

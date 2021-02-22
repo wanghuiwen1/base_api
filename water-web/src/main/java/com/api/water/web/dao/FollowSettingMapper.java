@@ -6,4 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
 public interface FollowSettingMapper extends ApiMapper<FollowSetting> {
+    void updateBydoctorId(FollowSetting followSetting);
+
+    FollowSetting selectByDoctorId(Long doctorId);
 }

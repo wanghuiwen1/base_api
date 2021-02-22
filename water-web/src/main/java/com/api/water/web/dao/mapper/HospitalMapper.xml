@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.api.water.web.dao.HospitalMapper">
+  <resultMap id="BaseResultMap" type="com.api.water.web.model.Hospital">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="hospitalid" jdbcType="BIGINT" property="hospitalid" />
+    <result column="hospital_name" jdbcType="VARCHAR" property="hospitalName" />
+    <result column="hospital_province" jdbcType="VARCHAR" property="hospitalProvince" />
+    <result column="hospital_location" jdbcType="VARCHAR" property="hospitalLocation" />
+    <result column="hospital_type" jdbcType="TINYINT" property="hospitalType" />
+    <result column="hospital_level" jdbcType="TINYINT" property="hospitalLevel" />
+    <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
+    <result column="status" jdbcType="BIT" property="status" />
+    <result column="is_default" jdbcType="BIT" property="isDefault" />
+    <result column="phosid" jdbcType="INTEGER" property="phosid" />
+    <result column="overstep" jdbcType="BIT" property="overstep" />
+    <result column="is_managebs" jdbcType="BIT" property="isManagebs" />
+    <result column="is_allow" jdbcType="BIT" property="isAllow" />
+    <result column="logo" jdbcType="VARCHAR" property="logo" />
+    <result column="yjcqsmall" jdbcType="REAL" property="yjcqsmall" />
+    <result column="yjcqbig" jdbcType="REAL" property="yjcqbig" />
+    <result column="yjchsmall" jdbcType="REAL" property="yjchsmall" />
+    <result column="yjchbig" jdbcType="REAL" property="yjchbig" />
+    <result column="yjnormal" jdbcType="REAL" property="yjnormal" />
+  </resultMap>
+</mapper>

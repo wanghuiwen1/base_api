@@ -14,13 +14,18 @@
     <result column="location" jdbcType="VARCHAR" property="location" />
     <result column="head" jdbcType="VARCHAR" property="head" />
     <result column="intro" jdbcType="VARCHAR" property="intro" />
+    <result column="ks_id" jdbcType="BIGINT" property="ksId" />
     <result column="user_id" jdbcType="BIGINT" property="userId" />
     <result column="starttime" jdbcType="INTEGER" property="starttime" />
     <result column="title" jdbcType="VARCHAR" property="title" />
     <result column="goodat" jdbcType="VARCHAR" property="goodat" />
     <result column="level" jdbcType="VARCHAR" property="level" />
     <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
+    <result column="status" jdbcType="BIT" property="status" />
+    <result column="his_id" jdbcType="VARCHAR" property="hisId" />
     <result column="mobile" jdbcType="VARCHAR" property="mobile" />
+    <result column="type" jdbcType="TINYINT" property="type" />
+    <result column="chronic" jdbcType="TINYINT" property="chronic" />
     <result column="work_id" jdbcType="VARCHAR" property="workId" />
   </resultMap>
 </mapper>

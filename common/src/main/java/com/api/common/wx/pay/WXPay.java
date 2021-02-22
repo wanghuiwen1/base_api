@@ -1,48 +1,43 @@
 package com.api.common.wx.pay;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Service;
-
+import com.api.common.wx.pay.WXPayConstants.SignType;
 import java.util.HashMap;
 import java.util.Map;
 
-@Service
-@ConfigurationProperties("wx.pay")
 public class WXPay {
 
-    private final WXPayConfig config;
+    private WXConfig config;
 
-    private final WXPayRequest wxPayRequest;
+    private WXPayRequest wxPayRequest;
 
 
-    private WXPayConstants.SignType signType= WXPayConstants.SignType.MD5;
+    private SignType signType=SignType.MD5;
 
     private boolean autoReport=true;
 
     private boolean useSandbox=false;
 
-    private String notifyUrl;
-
-    public WXPay(WXPayConfig config, WXPayRequest wxPayRequest) {
+    public WXPay(WXConfig config) {
         this.config = config;
-        this.wxPayRequest = wxPayRequest;
+        this.wxPayRequest = new WXPayRequest(config);
     }
-
 
     /**
      * 向 Map 中添加 appid、mch_id、nonce_str、sign_type、sign <br>
      * 该函数适用于商户适用于统一下单等接口，不适用于红包、代金券接口
      *
-     * @param reqData 请求参数
+     * @param reqData
+     * @return
+     * @throws Exception
      */
-    private Map<String, String> fillRequestData(Map<String, String> reqData) throws Exception {
+    public Map<String, String> fillRequestData(Map<String, String> reqData) throws Exception {
         reqData.put("appid", config.getAppID());
         reqData.put("mch_id", config.getMchID());
         reqData.put("nonce_str", WXPayUtil.generateNonceStr());
-        if (WXPayConstants.SignType.MD5.equals(this.signType)) {
+        if (SignType.MD5.equals(this.signType)) {
             reqData.put("sign_type", WXPayConstants.MD5);
         }
-        else if (WXPayConstants.SignType.HMACSHA256.equals(this.signType)) {
+        else if (SignType.HMACSHA256.equals(this.signType)) {
             reqData.put("sign_type", WXPayConstants.HMACSHA256);
         }
         reqData.put("sign", WXPayUtil.generateSignature(reqData, config.getKey(), this.signType));
@@ -54,8 +49,9 @@ public class WXPay {
      *
      * @param reqData 向wxpay post的请求数据
      * @return 签名是否有效
+     * @throws Exception
      */
-    private boolean isResponseSignatureValid(Map<String, String> reqData) throws Exception {
+    public boolean isResponseSignatureValid(Map<String, String> reqData) throws Exception {
         // 返回数据的签名方式和请求中给定的签名方式是一致的
         return WXPayUtil.isSignatureValid(reqData, this.config.getKey(), this.signType);
     }
@@ -65,23 +61,24 @@ public class WXPay {
      *
      * @param reqData 向wxpay post的请求数据
      * @return 签名是否有效
+     * @throws Exception
      */
     public boolean isPayResultNotifySignatureValid(Map<String, String> reqData) throws Exception {
         String signTypeInData = reqData.get(WXPayConstants.FIELD_SIGN_TYPE);
-        WXPayConstants.SignType signType;
+        SignType signType;
         if (signTypeInData == null) {
-            signType = WXPayConstants.SignType.MD5;
+            signType = SignType.MD5;
         }
         else {
             signTypeInData = signTypeInData.trim();
             if (signTypeInData.length() == 0) {
-                signType = WXPayConstants.SignType.MD5;
+                signType = SignType.MD5;
             }
             else if (WXPayConstants.MD5.equals(signTypeInData)) {
-                signType = WXPayConstants.SignType.MD5;
+                signType = SignType.MD5;
             }
             else if (WXPayConstants.HMACSHA256.equals(signTypeInData)) {
-                signType = WXPayConstants.SignType.HMACSHA256;
+                signType = SignType.HMACSHA256;
             }
             else {
                 throw new Exception(String.format("Unsupported sign_type: %s", signTypeInData));
@@ -98,13 +95,15 @@ public class WXPay {
      * @param connectTimeoutMs 超时时间，单位是毫秒
      * @param readTimeoutMs 超时时间，单位是毫秒
      * @return API返回数据
+     * @throws Exception
      */
-    private String requestWithoutCert(String urlSuffix, Map<String, String> reqData,
-                                      int connectTimeoutMs, int readTimeoutMs) throws Exception {
+    public String requestWithoutCert(String urlSuffix, Map<String, String> reqData,
+                                     int connectTimeoutMs, int readTimeoutMs) throws Exception {
         String msgUUID = reqData.get("nonce_str");
         String reqBody = WXPayUtil.mapToXml(reqData);
 
-        return this.wxPayRequest.requestWithoutCert(urlSuffix, msgUUID, reqBody, connectTimeoutMs, readTimeoutMs, autoReport);
+        String resp = this.wxPayRequest.requestWithoutCert(urlSuffix, msgUUID, reqBody, connectTimeoutMs, readTimeoutMs, autoReport);
+        return resp;
     }
 
 
@@ -117,12 +116,13 @@ public class WXPay {
      * @return API返回数据
      * @throws Exception
      */
-    private String requestWithCert(String urlSuffix, Map<String, String> reqData,
-                                   int connectTimeoutMs, int readTimeoutMs) throws Exception {
+    public String requestWithCert(String urlSuffix, Map<String, String> reqData,
+                                  int connectTimeoutMs, int readTimeoutMs) throws Exception {
         String msgUUID= reqData.get("nonce_str");
         String reqBody = WXPayUtil.mapToXml(reqData);
 
-        return this.wxPayRequest.requestWithCert(urlSuffix, msgUUID, reqBody, connectTimeoutMs, readTimeoutMs, this.autoReport);
+        String resp = this.wxPayRequest.requestWithCert(urlSuffix, msgUUID, reqBody, connectTimeoutMs, readTimeoutMs, this.autoReport);
+        return resp;
     }
 
     /**
@@ -131,7 +131,7 @@ public class WXPay {
      * @return Map类型数据
      * @throws Exception
      */
-    private Map<String, String> processResponseXml(String xmlStr) throws Exception {
+    public Map<String, String> processResponseXml(String xmlStr) throws Exception {
         String RETURN_CODE = "return_code";
         String return_code;
         Map<String, String> respData = WXPayUtil.xmlToMap(xmlStr);
@@ -146,12 +146,12 @@ public class WXPay {
             return respData;
         }
         else if (return_code.equals(WXPayConstants.SUCCESS)) {
-           if (this.isResponseSignatureValid(respData)) {
-               return respData;
-           }
-           else {
-               throw new Exception(String.format("Invalid sign value in XML: %s", xmlStr));
-           }
+            if (this.isResponseSignatureValid(respData)) {
+                return respData;
+            }
+            else {
+                throw new Exception(String.format("Invalid sign value in XML: %s", xmlStr));
+            }
         }
         else {
             throw new Exception(String.format("return_code value %s is invalid in XML: %s", return_code, xmlStr));
@@ -179,7 +179,7 @@ public class WXPay {
      * @return API返回数据
      * @throws Exception
      */
-    private Map<String, String> microPay(Map<String, String> reqData, int connectTimeoutMs, int readTimeoutMs) throws Exception {
+    public Map<String, String> microPay(Map<String, String> reqData, int connectTimeoutMs, int readTimeoutMs) throws Exception {
         String url;
         if (this.useSandbox) {
             url = WXPayConstants.SANDBOX_MICROPAY_URL_SUFFIX;
@@ -210,7 +210,7 @@ public class WXPay {
      * @return
      * @throws Exception
      */
-    private Map<String, String> microPayWithPos(Map<String, String> reqData, int connectTimeoutMs) throws Exception {
+    public Map<String, String> microPayWithPos(Map<String, String> reqData, int connectTimeoutMs) throws Exception {
         int remainingTimeMs = 60*1000;
         long startTimestampMs = 0;
         Map<String, String> lastResult = null;
@@ -242,7 +242,7 @@ public class WXPay {
                                         Thread.sleep(5*1000);
                                     }
                                     else {
-                                        Thread.sleep(1000);
+                                        Thread.sleep(1*1000);
                                     }
                                     continue;
                                 }
@@ -267,7 +267,6 @@ public class WXPay {
         }
 
         if (lastResult == null) {
-            assert lastException != null;
             throw lastException;
         }
         else {
@@ -298,7 +297,7 @@ public class WXPay {
      * @return API返回数据
      * @throws Exception
      */
-    private Map<String, String> unifiedOrder(Map<String, String> reqData, int connectTimeoutMs, int readTimeoutMs) throws Exception {
+    public Map<String, String> unifiedOrder(Map<String, String> reqData,  int connectTimeoutMs, int readTimeoutMs) throws Exception {
         String url;
         if (this.useSandbox) {
             url = WXPayConstants.SANDBOX_UNIFIEDORDER_URL_SUFFIX;
@@ -306,8 +305,8 @@ public class WXPay {
         else {
             url = WXPayConstants.UNIFIEDORDER_URL_SUFFIX;
         }
-        if(this.notifyUrl != null) {
-            reqData.put("notify_url", this.notifyUrl);
+        if(this.config.getNotifyUrl() != null) {
+            reqData.put("notify_url", this.config.getNotifyUrl());
         }
         String respXml = this.requestWithoutCert(url, this.fillRequestData(reqData), connectTimeoutMs, readTimeoutMs);
         return this.processResponseXml(respXml);
@@ -335,7 +334,7 @@ public class WXPay {
      * @return API返回数据
      * @throws Exception
      */
-    private Map<String, String> orderQuery(Map<String, String> reqData, int connectTimeoutMs, int readTimeoutMs) throws Exception {
+    public Map<String, String> orderQuery(Map<String, String> reqData, int connectTimeoutMs, int readTimeoutMs) throws Exception {
         String url;
         if (this.useSandbox) {
             url = WXPayConstants.SANDBOX_ORDERQUERY_URL_SUFFIX;
@@ -370,7 +369,7 @@ public class WXPay {
      * @return API返回数据
      * @throws Exception
      */
-    private Map<String, String> reverse(Map<String, String> reqData, int connectTimeoutMs, int readTimeoutMs) throws Exception {
+    public Map<String, String> reverse(Map<String, String> reqData, int connectTimeoutMs, int readTimeoutMs) throws Exception {
         String url;
         if (this.useSandbox) {
             url = WXPayConstants.SANDBOX_REVERSE_URL_SUFFIX;
@@ -404,7 +403,7 @@ public class WXPay {
      * @return API返回数据
      * @throws Exception
      */
-    private Map<String, String> closeOrder(Map<String, String> reqData, int connectTimeoutMs, int readTimeoutMs) throws Exception {
+    public Map<String, String> closeOrder(Map<String, String> reqData,  int connectTimeoutMs, int readTimeoutMs) throws Exception {
         String url;
         if (this.useSandbox) {
             url = WXPayConstants.SANDBOX_CLOSEORDER_URL_SUFFIX;
@@ -647,14 +646,37 @@ public class WXPay {
             url = WXPayConstants.ENTERPRISE_PAY;
         }
         String respXml = this.requestWithCert(url, reqData, config.getHttpConnectTimeoutMs(), config.getHttpReadTimeoutMs());
-        return this.processResponseXml(respXml);
+        return this.processResponseXmlNoSign(respXml);
     }
+    /**
+     * 处理 HTTPS API返回数据，转换成Map对象。
+     * @param xmlStr API返回的XML格式数据
+     * @return Map类型数据
+     * @throws Exception
+     */
+    public Map<String, String> processResponseXmlNoSign(String xmlStr) throws Exception {
+        String RETURN_CODE = "return_code";
+        String return_code;
+        Map<String, String> respData = WXPayUtil.xmlToMap(xmlStr);
+        if (respData.containsKey(RETURN_CODE)) {
+            return_code = respData.get(RETURN_CODE);
+        }
+        else {
+            throw new Exception(String.format("No `return_code` in XML: %s", xmlStr));
+        }
 
+        if (return_code.equals(WXPayConstants.FAIL)) {
+            return respData;
+        }
+        else if (return_code.equals(WXPayConstants.SUCCESS)) {
+            return respData;
+        }
+        else {
+            throw new Exception(String.format("return_code value %s is invalid in XML: %s", return_code, xmlStr));
+        }
+    }
     public String getNotifyUrl() {
-        return notifyUrl;
+        return config.getNotifyUrl();
     }
 
-    public void setNotifyUrl(String notifyUrl) {
-        this.notifyUrl = notifyUrl;
-    }
 } // end class

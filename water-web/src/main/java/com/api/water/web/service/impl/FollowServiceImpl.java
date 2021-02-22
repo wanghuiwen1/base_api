@@ -1,8 +1,13 @@
 package com.api.water.web.service.impl;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.api.core.config.AuthUser;
+import com.api.core.response.ResultCode;
+import com.api.water.web.constant.ConstPayment;
+import com.api.water.web.constant.ConstUser;
+import com.api.water.web.constant.Constant;
 import com.api.water.web.dao.*;
 import com.api.water.web.model.*;
 import com.api.water.web.service.FollowService;
@@ -25,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
 import java.util.*;
 
 import com.api.common.JSONUtils;
@@ -58,6 +64,8 @@ public class FollowServiceImpl extends AbstractService<Follow> implements Follow
     @Resource
     private PaymentMapper paymentMapper;
     @Resource
+    private FollowUserService followUserService;
+    @Resource
     private FollowUserMapper followUserMapper;
     @Value("${chat.host}")
     private String host;
@@ -81,7 +89,7 @@ public class FollowServiceImpl extends AbstractService<Follow> implements Follow
     }
 
     @Override
-    public Result add(HttpServletRequest request, Authentication authentication, Follow follow) {
+    public Result add(HttpServletRequest request, Authentication authentication, Follow follow,String openid,String tradeType) {
         AuthUser authUser = (AuthUser) authentication.getPrincipal();
         Byte type = authUser.getType();
         DoctorInfo doctorInfo = doctorInfoMapper.selectByPrimaryKey(follow.getDoctorId());
@@ -159,14 +167,223 @@ public class FollowServiceImpl extends AbstractService<Follow> implements Follow
             //会话不存在
             if (Objects.isNull(queryfollow)) {
                 //判断金额，如果为０则直接开始咨询，若不为０则未等待付款
+                if (followSetting.getPrice().compareTo(new BigDecimal("0")) <= 0) {
+                    follow.setStatus(Follow.STATUS_FOLLOWING);
+                } else {
+                    follow.setStatus(Follow.STATUS_WAITING);
+                }
+                followMapper.insert(follow);
             }else{
                 //会话存在
+                follow = queryfollow;
+                //已经是咨询中的状态
+                if (follow.getStatus().equals(Follow.STATUS_FOLLOWING)) {
+                    Result result = new Result();
+                    result.setCode(ResultCode.ADVISORY);
+                    result.setMessage("咨询尚未结束，请勿再次发起！");
+                    result.setData(follow);
+                    return result;
+                }else if (follow.getStatus().equals(Follow.STATUS_WAITING)||follow.getStatus().equals(Follow.STATUS_RESTART)){
+                    //等待支付或者是重新开始的会话，需要支付
+                    //查询是否有未支付的订单
+                    FollowOrder latest = followOrderMapper.latest(follow.getId());
+                    if(latest!=null){
+                        //有过订单
+                        if (latest.getStatus().equals(FollowOrder.STATUS_WAITPAY)) {
+                            Payment payment;
+                            //医生在用户支付的过程中修改了价格
+
+                                if (!latest.getAmount().equals(followSetting.getPrice())) {
+                                    latest.setAmount(followSetting.getPrice());
+                                    followOrderMapper.updateByPrimaryKey(latest);
+
+                                    payment = new Payment();
+                                    payment.setOrderId(latest.getId());
+                                    payment.setType(ConstPayment.ORDER_TYPE_ZI);
+                                    payment = paymentMapper.selectOne(payment);
+                                    //删除原有支付订单
+                                    paymentService.deleteById(payment.getId());
+                                    //创建新的支付订单
+                                    Payment newpayment = new Payment();
+                                    newpayment.setOrderId(latest.getId());
+                                    newpayment.setStatus(ConstPayment.STATUS_WAIT_PAY);
+                                    newpayment.setPayer(follow.getUid());
+                                    newpayment.setAmount(latest.getAmount());
+                                    newpayment.setPayee(follow.getDoctorId());
+                                    newpayment.setRemark("患者咨询订单");
+                                    newpayment.setCreateDate(date);
+                                    newpayment.setType(ConstPayment.ORDER_TYPE_ZI);
+                                    newpayment.setPayMethod(tradeType);
+                                    paymentService.save(newpayment);
+                                    payment = newpayment;
+                                } else {
+                                    payment = new Payment();
+                                    payment.setOrderId(latest.getId());
+                                    payment.setType(ConstPayment.ORDER_TYPE_ZI);
+                                    payment = paymentMapper.selectOne(payment);
+                                }
+                                if (payment == null) {
+                                    Payment newpayment = new Payment();
+                                    newpayment.setOrderId(latest.getId());
+                                    newpayment.setStatus(ConstPayment.STATUS_WAIT_PAY);
+                                    newpayment.setPayer(follow.getUid());
+                                    newpayment.setAmount(latest.getAmount());
+                                    newpayment.setPayee(follow.getDoctorId());
+                                    newpayment.setRemark("患者咨询订单");
+                                    newpayment.setCreateDate(date);
+                                    newpayment.setType(ConstPayment.ORDER_TYPE_ZI);
+                                    newpayment.setPayMethod(tradeType);
+                                    paymentService.save(newpayment);
+                                } else {
+                                    payment.setPayMethod(tradeType);
+                                    paymentMapper.updateByPrimaryKeySelective(payment);
+                                }
+                                if (followSetting.getPrice().compareTo(new BigDecimal("0")) > 0 && (follow.getStatus().equals(Follow.STATUS_OVER) || follow.getStatus().equals(Follow.STATUS_WAITING))) {
+                                    if (tradeType.equals("APP")) {
+                                        Result result = paymentService.createOrder(request, latest.getId(), ConstPayment.ORDER_TYPE_ZI, tradeType, openid, null, Constant.WFR_APP_CONFIG, "");
+                                        if (result.getCode() != 200) {
+                                            return ResultGenerator.genFailResult(result.getMessage());
+                                        }
+                                        Map<String, String> data = (Map<String, String>) result.getData();
+                                        data.put("extData", JSON.toJSONString(follow));
+                                        return ResultGenerator.genSuccessResult(data);
+                                    }
+                                    if (tradeType.equals("PUBLIC")) {
+                                        Result result = paymentService.createOrder(request, payment.getOrderId(), ConstPayment.ORDER_TYPE_ZI, tradeType, openid, null, Constant.WFR_WX_PUBLIC, "");
+                                        if (result.getCode() != 200) {
+                                            return ResultGenerator.genFailResult(result.getMessage());
+                                        }
+                                        Map<String, String> data = (Map<String, String>) result.getData();
+                                        data.put("extData", JSON.toJSONString(follow));
+                                        return ResultGenerator.genSuccessResult(data);
+                                    } else {
+                                        Result result = paymentService.createOrder(request, latest.getId(), ConstPayment.ORDER_TYPE_ZI, tradeType, openid, null, Constant.WFR_WX_CONFIG, "");
+                                        if (result.getCode() != 200) {
+                                            return ResultGenerator.genFailResult(result.getMessage());
+                                        }
+                                        Map<String, String> data = (Map<String, String>) result.getData();
+                                        data.put("extData", JSON.toJSONString(follow));
+                                        return ResultGenerator.genSuccessResult(data);
+                                    }
+                                } else {
+                                    Result result = new Result();
+                                    result.setCode(ResultCode.ADVISORY);
+                                    result.setMessage("咨询尚未结束");
+                                    follow.setStatus(Follow.STATUS_FOLLOWING);
+                                    result.setData(follow);
+                                    followMapper.updateByPrimaryKeySelective(follow);
+                                    return result;
+                                }
+
+                        } else if (latest.getStatus().equals(FollowOrder.STATUS_PAY) ) {
+                            Follow updateFollow = new Follow();
+                            updateFollow.setId(follow.getId());
+                            updateFollow.setStatus(Follow.STATUS_FOLLOWING);
+                            followMapper.updateByPrimaryKeySelective(updateFollow);
+                            Result result = new Result();
+                            result.setCode(ResultCode.ADVISORY);
+                            result.setMessage("咨询尚未结束，请勿再次发起！");
+                            result.setData(follow);
+                            return result;
+                        }
+                    }
+                }
+
             }
 
         }
 
         return null;
     }
+
+    @Override
+    public Result checkSetting(Long docId) {
+        FollowSetting queryFollowSetting = new FollowSetting();
+        queryFollowSetting.setDoctorId(docId);
+        FollowSetting followSetting = followSettingMapper.selectOne(queryFollowSetting);
+
+
+        if (Objects.isNull(followSetting)) {
+            return ResultGenerator.genSuccessResult(false);
+        }
+        return ResultGenerator.genSuccessResult(true);
+    }
+
+    @Override
+    public Result followList(Long userid, Byte type, Integer page, Integer size) {
+        List<Map> maps;
+        PageInfo pageInfo;
+        if (type == ConstUser.TYPE_DOCTOR || type == ConstUser.TYPE_NURSE) {//医生查
+            DoctorInfo queryDoctorInfo = new DoctorInfo();
+            queryDoctorInfo.setUserId(userid);
+            DoctorInfo doctorInfo = doctorInfoMapper.selectOne(queryDoctorInfo);
+            PageHelper.startPage(page, size);
+            maps = followMapper.doctorFollowList(doctorInfo.getUserId());
+            pageInfo = new PageInfo<>(maps);
+        } else {//普通查
+            PageHelper.startPage(page, size);
+            maps = followMapper.commonFollowList(userid);
+            pageInfo = new PageInfo<>(maps);
+        }
+        return ResultGenerator.genSuccessResult(pageInfo);
+    }
+
+    @Override
+    public List<Map> detail(Long followId) {
+
+        List<Map> detail = followMapper.detail(followId);
+        for (int i = 0; i < detail.size(); i++) {
+            Map message = detail.get(i);
+            if (message.get("type").equals(5) && !"咨询结束".equals(message.get("message"))) {
+                JSONObject jsonObject = JSONObject.parseObject((String) message.get("message"));
+                Long followOrderId = jsonObject.getLong("followOrderId");
+                Condition condition = new Condition(FollowOrderEvaluation.class);
+                condition.createCriteria().andEqualTo("followOrder", ForCondition.LongGenerator(followOrderId));
+                List evaluation = followOrderEvaluationMapper.selectByCondition(condition);
+                if (evaluation.size() == 0) {
+                    jsonObject.put("hasEvaluted", 0);
+                } else {
+                    jsonObject.put("hasEvaluted", 1);
+                }
+                message.put("message", jsonObject.toJSONString());
+            }
+        }
+        return detail;
+    }
+
+    @Override
+    public Result getChat(Long followId) {
+
+        Follow query = new Follow();
+        query.setId(followId);
+        Follow follow = followMapper.selectOne(query);
+        FollowOrder followOrder = followOrderMapper.latest(followId);
+//        if (followOrder.getStatus().equals(FollowOrder.STATUS_WAITPAY)) {
+//            followOrder.setStatus(FollowOrder.STATUS_PAY);
+//        }
+
+//        if (followOrder.getIsaccept().equals(FollowOrder.ACCEPT_PENDING)) {
+//            followOrder.setIsaccept(FollowOrder.ACCEPT_AGREE);
+//        }
+        followOrderMapper.updateByPrimaryKeySelective(followOrder);
+        followUserService.inspectors(follow.getDoctorId(), follow.getId());
+        if (Objects.nonNull(follow.getGroupChatId())) {
+            HashMap<String, String> dataMap = new HashMap<String, String>();
+            dataMap.put("chatId", follow.getGroupChatId());
+            dataMap.put("status", followOrder.getStatus().toString());
+            return ResultGenerator.genSuccessResult(dataMap, "获取成功");
+        }
+
+
+        String chatId = getChatId(follow.getUid(), follow.getDoctorId());
+        follow.setGroupChatId(chatId);
+        followMapper.updateByPrimaryKeySelective(follow);
+        HashMap<String, String> dataMap = new HashMap<String, String>();
+        dataMap.put("chatId", chatId);
+        dataMap.put("status", followOrder.getStatus().toString());
+        return ResultGenerator.genSuccessResult(dataMap, "获取成功");
+    }
+
     private String getChatId(Long uid, Long doctorId) {
         ArrayList<Map<String, String>> data = new ArrayList<>();
         Map<String, String> uidmap = new HashMap<>();

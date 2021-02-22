@@ -1,4 +1,5 @@
 package com.api.water.web.controller;
+import com.api.core.config.AuthUser;
 import com.api.core.controller.Ctrl;
 import com.api.core.response.Result;
 import com.api.core.response.ResultGenerator;
@@ -6,6 +7,8 @@ import com.api.water.web.model.FollowMessage;
 import com.api.water.web.service.FollowMessageService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -14,6 +17,8 @@ import tk.mybatis.mapper.entity.Condition;
 import tk.mybatis.mapper.entity.Example;
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Map;
+
 import com.api.core.annotation.PowerEnable;
 import io.swagger.annotations.*;
 
@@ -29,53 +34,49 @@ import io.swagger.annotations.*;
 public class FollowMessageController extends Ctrl{
     @Resource
     private FollowMessageService followMessageService;
+    @Value("${web.upload-path}")
+    private String path;
+    @Value("${image.host}")
+    private String host;
 
-    @ApiOperation(value = "随访消息添加", tags = {"随访消息"}, notes = "随访消息添加")
-    @PostMapping(value="/add",name="随访消息添加")
-    public Result add(@ApiParam FollowMessage followMessage) {
-        followMessageService.save(followMessage);
-        return ResultGenerator.genSuccessResult();
+    @ApiOperation(value="随访发送消息",tags={"随访"},notes="随访发送消息")
+    @PostMapping(value = "send",name = "随访发送消息")
+    public Result send(@ApiParam FollowMessage followMessage, Authentication authentication){
+        AuthUser authUser = (AuthUser)authentication.getPrincipal();
+        Long time = System.currentTimeMillis() / 1000;
+        followMessage.setCreateDate(time.intValue());
+        followMessage.setSender(authUser.getId());
+        return followMessageService.send(followMessage,authUser.getType());
     }
 
-    @ApiOperation(value = "随访消息删除", tags = {"随访消息"}, notes = "随访消息删除")
+    @ApiOperation(value="随访消息设置已读",tags={"随访"},notes="随访消息设置已读")
     @ApiImplicitParams({
-        @ApiImplicitParam(name = "id",required=true, value = "随访消息id", dataType = "Long", paramType = "query")
+            @ApiImplicitParam(name="followId",value="随访ID",dataType="Long", paramType = "query"),
     })
-    @PostMapping(value="/delete",name="随访消息删除")
-    public Result delete(@RequestParam Long id) {
-        followMessageService.deleteById(id);
-        return ResultGenerator.genSuccessResult();
+    @PostMapping(value = "read",name = "随访消息设置已读")
+    public Result read(Long followId, Authentication authentication){
+        AuthUser authUser = (AuthUser)authentication.getPrincipal();
+        return followMessageService.read(followId,authUser.getId());
     }
-
-    @ApiOperation(value = "随访消息修改", tags = {"随访消息"}, notes = "随访消息修改,对象主键必填")
-    @PostMapping(value="/update",name="随访消息修改")
-    public Result update(@ApiParam FollowMessage followMessage) {
-        followMessageService.update(followMessage);
-        return ResultGenerator.genSuccessResult();
-    }
-
-    @ApiOperation(value = "随访消息详细信息", tags = {"随访消息"}, notes = "随访消息详细信息")
+    @ApiOperation(value = "医生结束聊天", tags = {"随访"}, notes = "医生结束聊天")
     @ApiImplicitParams({
-        @ApiImplicitParam(name = "id",required=true, value = "随访消息id", dataType = "Long", paramType = "query")
+            @ApiImplicitParam(name = "followId", value = "随访ID", dataType = "Long", paramType = "query"),
     })
-    @PostMapping(value="/detail",name="随访消息详细信息")
-    public Result detail(@RequestParam Integer id) {
-        FollowMessage followMessage = followMessageService.findById(id);
-        return ResultGenerator.genSuccessResult(followMessage);
+    @PostMapping(value = "/close" ,name = "医生结束聊天")
+    public Result close(Long followId, Authentication authentication) {
+        return followMessageService.close(followId,authentication);
     }
 
-    @ApiOperation(value = "随访消息列表信息", tags = {"随访消息"}, notes = "随访消息列表信息")
+    @ApiOperation(value = "所有医生未读列表", tags = {"随访"}, notes = "所有医生未读列表")
     @ApiImplicitParams({
-        @ApiImplicitParam(name = "search", value = "查询条件json", dataType = "String", paramType = "query"),
-        @ApiImplicitParam(name = "order", value = "排序json", dataType = "String", paramType = "query"),
-        @ApiImplicitParam(name = "page", value = "页码", dataType = "String", paramType = "query"),
-        @ApiImplicitParam(name = "size", value = "每页显示的条数", dataType = "String", paramType = "query", defaultValue = "10")
+            @ApiImplicitParam(name = "page", value = "页码", dataType = "Integer", paramType = "query"),
+            @ApiImplicitParam(name = "size", value = "条数", dataType = "Integer", paramType = "query"),
     })
-    @PostMapping(value = "/list", name = "随访消息列表信息")
-    public Result list(@RequestParam(defaultValue = "{}") String search,
-                       @RequestParam(defaultValue = "{}") String order,
-                       @RequestParam(defaultValue = "0") Integer page,
-                       @RequestParam(defaultValue = "10") Integer size) {
-        return followMessageService.list(search, order, page, size);
+    @PostMapping(value = "/getAllDoctorNoReadList" ,name = "所有医生未读列表")
+    public Result getAllDoctorNoReadList(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "10") Integer size) {
+        PageHelper.startPage(page, size);
+        List<Map<String, Object>> detail = followMessageService.getAllDoctorNoReadList();
+        PageInfo pageInfo = new PageInfo<>(detail);
+        return ResultGenerator.genSuccessResult(pageInfo);
     }
 }

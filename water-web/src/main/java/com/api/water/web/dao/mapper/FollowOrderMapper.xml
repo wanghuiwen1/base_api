@@ -14,4 +14,36 @@
     <result column="status" jdbcType="BIT" property="status" />
     <result column="isaccept" jdbcType="TINYINT" property="isaccept" />
   </resultMap>
+  <select id="latest" resultMap="BaseResultMap">
+      select id,follow_id,amount,start_time,end_time,create_date,status,isaccept
+      from follow_order
+      where follow_id = #{followId}
+      order by create_date DESC LIMIT 1
+    </select>
+    <select id="list" resultType="java.util.Map">
+        select  fo.id,
+                fo.follow_id,
+                fo.amount,
+                fo.start_time,
+                fo.end_time,
+                fo.create_date,
+                fo.status * 1 as status,d.name,d.intro,d.head,d.age,d.sex,d.title,de.name,
+                foe.evaluation_content,
+                foe.evaluation_score,
+                 case
+           when a.status = 2 and foe.evaluation_score is null and r.status is null and fo.amount !=0 and date_add(p.complete_date, interval 7 day )>=now() then 1
+           when a.status = 2 and foe.evaluation_score is null and r.status=1 then 2
+           when r.status=2 then 3
+           when r.status=3 then 4
+           else 0 end as canRefund
+        from (select * from follow where uid = #{uid} ) a
+        left join follow_order fo on(fo.follow_id = a.id )
+        left join doctor_info d on(a.doctor_id = d.id)
+        left join department de on (d.ks_id = de.ksid)
+        left join follow_order_evaluation foe on (foe.follow_order = fo.id)
+        left join refund_apply r on r.follow_order_id = fo.id
+         left join payment p on p.order_Id=fo.id
+        where fo.status = 1 or fo.status = 4
+
+    </select>
 </mapper>

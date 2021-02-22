@@ -26,6 +26,9 @@ public class DoctorInfo implements Serializable {
 
     private String intro;
 
+    @Column(name = "ks_id")
+    private Long ksId;
+
     @Column(name = "user_id")
     private Long userId;
 
@@ -40,7 +43,19 @@ public class DoctorInfo implements Serializable {
     @Column(name = "create_date")
     private Date createDate;
 
+    private Boolean status;
+
+    @Column(name = "his_id")
+    private String hisId;
+
     private String mobile;
+
+    private Byte type;
+
+    /**
+     * 0无权开慢病处方　１有权开慢病处方
+     */
+    private Byte chronic;
 
     /**
      * 工号
@@ -177,6 +192,20 @@ public class DoctorInfo implements Serializable {
     }
 
     /**
+     * @return ks_id
+     */
+    public Long getKsId() {
+        return ksId;
+    }
+
+    /**
+     * @param ksId
+     */
+    public void setKsId(Long ksId) {
+        this.ksId = ksId;
+    }
+
+    /**
      * @return user_id
      */
     public Long getUserId() {
@@ -261,6 +290,34 @@ public class DoctorInfo implements Serializable {
     }
 
     /**
+     * @return status
+     */
+    public Boolean getStatus() {
+        return status;
+    }
+
+    /**
+     * @param status
+     */
+    public void setStatus(Boolean status) {
+        this.status = status;
+    }
+
+    /**
+     * @return his_id
+     */
+    public String getHisId() {
+        return hisId;
+    }
+
+    /**
+     * @param hisId
+     */
+    public void setHisId(String hisId) {
+        this.hisId = hisId;
+    }
+
+    /**
      * @return mobile
      */
     public String getMobile() {
@@ -272,6 +329,38 @@ public class DoctorInfo implements Serializable {
      */
     public void setMobile(String mobile) {
         this.mobile = mobile;
+    }
+
+    /**
+     * @return type
+     */
+    public Byte getType() {
+        return type;
+    }
+
+    /**
+     * @param type
+     */
+    public void setType(Byte type) {
+        this.type = type;
+    }
+
+    /**
+     * 获取0无权开慢病处方　１有权开慢病处方
+     *
+     * @return chronic - 0无权开慢病处方　１有权开慢病处方
+     */
+    public Byte getChronic() {
+        return chronic;
+    }
+
+    /**
+     * 设置0无权开慢病处方　１有权开慢病处方
+     *
+     * @param chronic 0无权开慢病处方　１有权开慢病处方
+     */
+    public void setChronic(Byte chronic) {
+        this.chronic = chronic;
     }
 
     /**

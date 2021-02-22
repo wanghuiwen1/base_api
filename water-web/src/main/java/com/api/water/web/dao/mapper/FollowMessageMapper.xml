@@ -14,4 +14,54 @@
     <result column="audio_length" jdbcType="INTEGER" property="audioLength" />
     <result column="screen" jdbcType="BIT" property="screen" />
   </resultMap>
+  <select id="getNoRead" parameterType="java.util.Map" resultMap="BaseResultMap">
+    select *
+    from follow_message m
+    where exists(select *
+    from follow_user u
+    where u.follow_id = m.follow_id
+    and u.user_id = #{userId}
+    and u.last_read &lt; m.create_date)
+    and sender!= #{userId}
+  </select>
+
+  <select id="getDoctorNoRead" resultMap="BaseResultMap" parameterType="java.util.Map">
+    select *
+      from follow_message m
+      where exists(select * from follow f where exists(select * from follow_user u where u.user_id = #{doctorId} and u.follow_id = f.id and  f.status=2)and f.id = m.follow_id)
+      and exists(select * from follow_user u where u.user_id = #{doctorId} and u.follow_id=m.follow_id  and u.last_read &lt; m.create_date )
+      and sender != #{doctorId}
+  </select>
+  <select id="getAllDoctorNoReadList" resultType="com.common.mybatis.ResultMap">
+    select f.id,d.name as dName,ui.name as uName,FROM_UNIXTIME(fm.last_time) as last_time,d.user_id from follow f
+                                                                                               left join doctor_info d on d.id = f.doctor_id
+                                                                                               left join follow_user fu on fu.user_id = d.user_id and fu.follow_id=f.id
+                                                                                               left join(select fmmax.follow_id,fmn.sender,fmmax.last_time from
+    (select max(create_date) last_time, follow_id, sender
+     from follow_message
+     group by follow_id) fmmax
+        inner join follow_message fmn on fmn.follow_id=fmmax.follow_id and fmn.create_date = fmmax.last_time) fm on f.id = fm.follow_id
+                                                                                               left join user_info ui on ui.user_id = f.uid
+
+where fm.last_time>fu.last_read and fm.sender!=fu.user_id and f.status=2 order by fm.last_time desc
+  </select>
+  <select id="getSomeOnesNoReadList" resultType="com.common.mybatis.ResultMap">
+    select f.id, d.name as dName, ui.name as uName, FROM_UNIXTIME(fm.last_time) as last_time, d.user_id
+from follow f
+         left join doctor_info d on d.id = f.doctor_id
+         left join user_info ui on ui.user_id = f.uid
+         left join follow_user fu on fu.user_id = ui.user_id and fu.follow_id = f.id
+         left join(select fmmax.follow_id,fmn.sender,fmmax.last_time from
+    (select max(create_date) last_time, follow_id, sender
+     from follow_message
+     group by follow_id) fmmax
+        inner join follow_message fmn on fmn.follow_id=fmmax.follow_id and fmn.create_date = fmmax.last_time) fm on f.id = fm.follow_id
+
+
+where fm.last_time > fu.last_read
+  and fm.sender != fu.user_id
+  and f.status = 2
+  and fu.user_id=#{userId}
+order by fm.last_time desc
+  </select>
 </mapper>

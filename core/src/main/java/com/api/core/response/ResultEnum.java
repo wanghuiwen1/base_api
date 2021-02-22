@@ -31,6 +31,8 @@ public enum ResultEnum implements IResultEnum {
     MODULE_EXISTS("模块不存在",400117),
     DUPLICATE_KEY("违反唯一约束",400118),
     PASSWORD_ERROR("密码错误",400119),
+    ADDRESSNULL("请填写默认配送地址，方便医生开药后快速送达",4002),
+    PAYFAILD("订单创建失败",433)
     ;
 
     private final String message;

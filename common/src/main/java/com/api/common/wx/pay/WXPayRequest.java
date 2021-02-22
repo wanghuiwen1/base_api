@@ -1,5 +1,6 @@
 package com.api.common.wx.pay;
 
+import com.api.common.wx.pay.WXPayConfig;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -15,8 +16,6 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
 import org.apache.http.util.EntityUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
@@ -25,12 +24,14 @@ import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.security.KeyStore;
 import java.security.SecureRandom;
+import static com.api.common.wx.pay.WXPayConstants.USER_AGENT;
 
-@Component
 public class WXPayRequest {
-    @Autowired
     private WXPayConfig config;
 
+    public WXPayRequest(WXPayConfig config) {
+        this.config = config;
+    }
 
     /**
      * 请求，只请求一次，不做重试
@@ -101,7 +102,7 @@ public class WXPayRequest {
 
         StringEntity postEntity = new StringEntity(data, "UTF-8");
         httpPost.addHeader("Content-Type", "text/xml");
-        httpPost.addHeader("User-Agent", WXPayConstants.USER_AGENT + " " + config.getMchID());
+        httpPost.addHeader("User-Agent", USER_AGENT + " " + config.getMchID());
         httpPost.setEntity(postEntity);
 
         HttpResponse httpResponse = httpClient.execute(httpPost);

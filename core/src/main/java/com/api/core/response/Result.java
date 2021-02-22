@@ -11,9 +11,26 @@ public class Result {
     private String message;
     private Object data;
 
-    public Result() {
+    public void setCode(int code) {
+        this.code = code;
     }
 
+    public Result setMessage(String message) {
+        this.message = message;
+        return this;
+    }
+
+    public Result setData(Object data) {
+        this.data = data;
+        return this;
+    }
+
+    public Result() {
+    }
+    public Result setCode(ResultCode resultCode) {
+        this.code = resultCode.code();
+        return this;
+    }
     public Result(Exception e) {
         this.code=400;
         this.message = e.getMessage();

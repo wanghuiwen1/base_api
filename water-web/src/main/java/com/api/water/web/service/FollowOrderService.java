@@ -7,5 +7,5 @@ import com.api.core.response.Result;
  * Created by wanghuiwen on 2021/01/20.
  */
 public interface FollowOrderService extends Service<FollowOrder> {
-   Result list(String search, String order, Integer page, Integer size);
+   Result list(Long id);
 }

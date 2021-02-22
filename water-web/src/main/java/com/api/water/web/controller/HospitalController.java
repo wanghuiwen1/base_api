@@ -2,8 +2,8 @@ package com.api.water.web.controller;
 import com.api.core.controller.Ctrl;
 import com.api.core.response.Result;
 import com.api.core.response.ResultGenerator;
-import com.api.water.web.model.DoctorInfo;
-import com.api.water.web.service.DoctorInfoService;
+import com.api.water.web.model.Hospital;
+import com.api.water.web.service.HospitalService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,60 +22,60 @@ import io.swagger.annotations.*;
 /**
 * Created by wanghuiwen on 2021/02/22.
 */
-@PowerEnable(name = "医生信息",url = "/doctor/info")
-@Api(value = "医生信息", tags = {"医生信息"})
+@PowerEnable(name = "医院",url = "/hospital")
+@Api(value = "医院", tags = {"医院"})
 @RestController
-@RequestMapping("/doctor/info")
-public class DoctorInfoController extends Ctrl{
+@RequestMapping("/hospital")
+public class HospitalController extends Ctrl{
     @Resource
-    private DoctorInfoService doctorInfoService;
+    private HospitalService hospitalService;
 
-    @ApiOperation(value = "医生信息添加", tags = {"医生信息"}, notes = "医生信息添加")
-    @PostMapping(value="/add",name="医生信息添加")
-    public Result add(@ApiParam DoctorInfo doctorInfo) {
-        doctorInfoService.save(doctorInfo);
+    @ApiOperation(value = "医院添加", tags = {"医院"}, notes = "医院添加")
+    @PostMapping(value="/add",name="医院添加")
+    public Result add(@ApiParam Hospital hospital) {
+        hospitalService.save(hospital);
         return ResultGenerator.genSuccessResult();
     }
 
-    @ApiOperation(value = "医生信息删除", tags = {"医生信息"}, notes = "医生信息删除")
+    @ApiOperation(value = "医院删除", tags = {"医院"}, notes = "医院删除")
     @ApiImplicitParams({
-        @ApiImplicitParam(name = "id",required=true, value = "医生信息id", dataType = "Long", paramType = "query")
+        @ApiImplicitParam(name = "id",required=true, value = "医院id", dataType = "Long", paramType = "query")
     })
-    @PostMapping(value="/delete",name="医生信息删除")
+    @PostMapping(value="/delete",name="医院删除")
     public Result delete(@RequestParam Long id) {
-        doctorInfoService.deleteById(id);
+        hospitalService.deleteById(id);
         return ResultGenerator.genSuccessResult();
     }
 
-    @ApiOperation(value = "医生信息修改", tags = {"医生信息"}, notes = "医生信息修改,对象主键必填")
-    @PostMapping(value="/update",name="医生信息修改")
-    public Result update(@ApiParam DoctorInfo doctorInfo) {
-        doctorInfoService.update(doctorInfo);
+    @ApiOperation(value = "医院修改", tags = {"医院"}, notes = "医院修改,对象主键必填")
+    @PostMapping(value="/update",name="医院修改")
+    public Result update(@ApiParam Hospital hospital) {
+        hospitalService.update(hospital);
         return ResultGenerator.genSuccessResult();
     }
 
-    @ApiOperation(value = "医生信息详细信息", tags = {"医生信息"}, notes = "医生信息详细信息")
+    @ApiOperation(value = "医院详细信息", tags = {"医院"}, notes = "医院详细信息")
     @ApiImplicitParams({
-        @ApiImplicitParam(name = "id",required=true, value = "医生信息id", dataType = "Long", paramType = "query")
+        @ApiImplicitParam(name = "id",required=true, value = "医院id", dataType = "Long", paramType = "query")
     })
-    @PostMapping(value="/detail",name="医生信息详细信息")
+    @PostMapping(value="/detail",name="医院详细信息")
     public Result detail(@RequestParam Integer id) {
-        DoctorInfo doctorInfo = doctorInfoService.findById(id);
-        return ResultGenerator.genSuccessResult(doctorInfo);
+        Hospital hospital = hospitalService.findById(id);
+        return ResultGenerator.genSuccessResult(hospital);
     }
 
-    @ApiOperation(value = "医生信息列表信息", tags = {"医生信息"}, notes = "医生信息列表信息")
+    @ApiOperation(value = "医院列表信息", tags = {"医院"}, notes = "医院列表信息")
     @ApiImplicitParams({
         @ApiImplicitParam(name = "search", value = "查询条件json", dataType = "String", paramType = "query"),
         @ApiImplicitParam(name = "order", value = "排序json", dataType = "String", paramType = "query"),
         @ApiImplicitParam(name = "page", value = "页码", dataType = "String", paramType = "query"),
         @ApiImplicitParam(name = "size", value = "每页显示的条数", dataType = "String", paramType = "query", defaultValue = "10")
     })
-    @PostMapping(value = "/list", name = "医生信息列表信息")
+    @PostMapping(value = "/list", name = "医院列表信息")
     public Result list(@RequestParam(defaultValue = "{}") String search,
                        @RequestParam(defaultValue = "{}") String order,
                        @RequestParam(defaultValue = "0") Integer page,
                        @RequestParam(defaultValue = "10") Integer size) {
-        return doctorInfoService.list(search, order, page, size);
+        return hospitalService.list(search, order, page, size);
     }
 }
